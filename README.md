@@ -1,2 +1,3 @@
 # PRJ_ECA
-Tool to calculate costs of used energy by tracked data. 
+Python-Tool to calculate costs of used energy by tracked data. 
+
