@@ -16,6 +16,8 @@ class App(ctk.CTk):                             # analogy: root = ctk.CTk()
         None
         """
         super().__init__()
+        self.dataBase = dataBase()
+
         # MAIN WINDOW
         ctk.set_appearance_mode(UI_constants.DEF_APPEARANCE_MODE)
         ctk.set_default_color_theme(UI_constants.DEF_COLOR_THEME)
@@ -26,11 +28,9 @@ class App(ctk.CTk):                             # analogy: root = ctk.CTk()
 
         # DEFINE WIDGETS
         self.mainFrame = main_frame(self, UI_constants)  # analogy: main_frame = ctk.CTkFrame(master=root)
-        self.selectDB = selectDB_frame(self.mainFrame, UI_constants)
-        self.buttonsFrame = buttons_frame(self.mainFrame, UI_constants)
+        self.selectDB = selectDB_frame(self.mainFrame, self.dataBase, UI_constants)
+        self.buttonsFrame = buttons_frame(self.mainFrame, self.dataBase, UI_constants)
         self.buttonsFrame.callback = self.selectDB.handleDropDownState
-
-        self.dataBase = dataBase(self, UI_constants)
 
         # RUN APP
         self.mainloop()

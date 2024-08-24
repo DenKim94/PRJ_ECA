@@ -2,14 +2,21 @@ import customtkinter as ctk
 
 
 class selectDB_frame(ctk.CTkFrame):
-    def __init__(self, parent, UI_constants):
+    def __init__(self, parent, dataBase, UI_constants):
         # analogy: frame = ctk.CTkFrame(master=root, fg_color="transparent")
         super().__init__(parent, fg_color="transparent")
+        self.dataBase = dataBase
+
         # MEMBER VARIABLES
         self.PLACEHOLDER = UI_constants.PLACEHOLDER_TEXT
         self.analysisIsRunning = False
-        self.valueListDropDown = [self.PLACEHOLDER, "TEST_OPTION_01"]
+        self.valueListDropDown = [self.PLACEHOLDER]
         self.dropDownValue = ctk.StringVar(value=UI_constants.PLACEHOLDER_TEXT)
+
+        # UPDATE DATABASE LIST
+        if self.dataBase.existing_db_files is not None:
+            for fileName in self.dataBase.existing_db_files:
+                self.addDropDownValue(fileName)
 
         # WIDGETS
         self.label_db = ctk.CTkLabel(master=self, text=UI_constants.LABEL_TEXT,
@@ -25,7 +32,7 @@ class selectDB_frame(ctk.CTkFrame):
                                              button_hover_color="gray",
                                              text_color="white",
                                              dropdown_fg_color="gray",
-                                             font=(UI_constants.DEF_FONT, UI_constants.FONT_SIZE_DROPDOWN)
+                                             font=(UI_constants.DEF_FONT, UI_constants.FONT_SIZE_DROPDOWN),
                                              )
         self.dropdown_db.set(self.PLACEHOLDER)
         self.button_run = ctk.CTkButton(master=self, text="Start", cursor=UI_constants.CURSOR_TYPE,
@@ -57,6 +64,10 @@ class selectDB_frame(ctk.CTkFrame):
             print(f"Unexpected error @addDropDownValue(): {err}")
 
     def updateDropDownValues(self):
+        existing_db_files = self.dataBase.get_existing_db_files()
+        for fileName in existing_db_files:
+            self.addDropDownValue(fileName)
+
         self.dropdown_db.configure(values=self.valueListDropDown)
 
     def removeDropDownValue(self, valueToRemove):
@@ -66,7 +77,7 @@ class selectDB_frame(ctk.CTkFrame):
 
                 if self.dropDownValue.get() == valueToRemove:
                     self.dropDownValue.set(self.PLACEHOLDER)
-                self.updateDropDownValues()
+                self.dropdown_db.configure(values=self.valueListDropDown)
 
         except Exception as err:
             print(f"Unexpected error @removeDropDownValue(): {err}")
@@ -79,7 +90,7 @@ class selectDB_frame(ctk.CTkFrame):
 
                 if self.dropDownValue.get() == oldValue:
                     self.dropDownValue.set(newValue)
-                self.updateDropDownValues()
+                self.dropdown_db.configure(values=self.valueListDropDown)
             else:
                 print(f"Value: {oldValue} not found!")
 

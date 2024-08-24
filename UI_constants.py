@@ -1,4 +1,5 @@
 # GENERAL
+CREATE_LOG_FILE = False   # TO-DO
 GUI_TITLE = "Energy Costs Analyzer"
 GUI_WIDTH = 550
 GUI_HEIGHT = 350
@@ -29,8 +30,12 @@ PLACEHOLDER_TEXT = "Keine Auswahl"
 # ENTRY
 ENTRY_WIDTH = 200
 
-
-
+# DATABASE
+PLACEHOLDER_DB_NAME = "<Zählernummer>_Q<Quartalzahl>_<Jahr>"
+DEF_DB_ROOT = "database"    # Name of database root folder
+DEF_TABLE_NAME = "used_energy"
+ENTRY_WIDTH_DB = 280
+DEF_INIT_ELEM_ID = 1
 
 
 

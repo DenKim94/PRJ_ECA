@@ -3,14 +3,26 @@ import datetime
 
 
 class buttons_frame(ctk.CTkFrame):
-    def __init__(self, parent, UI_constants):
+    def __init__(self, parent, dataBase, UI_constants):
         # analogy: frame = ctk.CTkFrame(master=root, fg_color="transparent")
         super().__init__(parent, fg_color="transparent")
+        self.dataBase = dataBase
+
+        # CONSTANT VARIABLES
+        self.GUI_MIN_WIDTH = UI_constants.GUI_MIN_WIDTH
+        self.GUI_MIN_HEIGHT = UI_constants.GUI_MIN_HEIGHT
+        self.GUI_MAX_WIDTH = UI_constants.GUI_MAX_WIDTH
+        self.GUI_MAX_HEIGHT = UI_constants.GUI_MAX_HEIGHT
         self.CURSOR_TYPE = UI_constants.CURSOR_TYPE
         self.DEF_FONT = UI_constants.DEF_FONT
-        self. FONT_SIZE_BUTTON = UI_constants.FONT_SIZE_BUTTON
-        self. BUTTON_WIDTH = UI_constants.BUTTON_WIDTH
+        self.FONT_SIZE_BUTTON = UI_constants.FONT_SIZE_BUTTON
+        self.BUTTON_WIDTH = UI_constants.BUTTON_WIDTH
+        self.ENTRY_WIDTH_DB = UI_constants.ENTRY_WIDTH_DB
         self.ENTRY_WIDTH = UI_constants.ENTRY_WIDTH
+        self.PLACEHOLDER_DB_NAME = UI_constants.PLACEHOLDER_DB_NAME
+        # WIDGETS
+        self.request_delete_db_elem = False
+        self.request_add_db_elem = False
         self.error_label = None
         self.confirm_button = None
         self.db_name_entry = None
@@ -44,6 +56,8 @@ class buttons_frame(ctk.CTkFrame):
         self.new_window = ctk.CTkToplevel(self.master)
         self.new_window.title("Neue Datenbank erstellen")
         self.new_window.geometry(self.master.master.geometry())
+        self.new_window.minsize(self.GUI_MIN_WIDTH, self.GUI_MIN_HEIGHT)
+        self.new_window.maxsize(self.GUI_MAX_WIDTH, self.GUI_MAX_HEIGHT)
         self.disable_buttons()
         # Create a container to hold the input fields
         container = ctk.CTkFrame(master=self.new_window, fg_color="transparent")
@@ -58,15 +72,16 @@ class buttons_frame(ctk.CTkFrame):
 
         db_name_label.pack(padx=5, pady=5)
         self.db_name_entry = ctk.CTkEntry(master=frame,
-                                          width=self.ENTRY_WIDTH,
-                                          justify="center")
+                                          width=self.ENTRY_WIDTH_DB,
+                                          justify="center",
+                                          placeholder_text=self.PLACEHOLDER_DB_NAME)
         self.db_name_entry.pack(padx=5, pady=5, expand=True)
 
         # Create the second and third input fields (date and number)
         frame = ctk.CTkFrame(master=container, fg_color="transparent")
         frame.pack(side='top', padx=5, pady=5)
         number_label = ctk.CTkLabel(master=frame, font=(self.DEF_FONT, self.FONT_SIZE_BUTTON),
-                                    text="Zählerstand in kWh:")
+                                    text="Zählerstand (Initialwert) in kWh:")
         number_label.pack(side='top', padx=5, pady=5)
         self.number_entry = ctk.CTkEntry(master=frame,
                                          width=self.ENTRY_WIDTH,
@@ -107,6 +122,7 @@ class buttons_frame(ctk.CTkFrame):
 
     def check_input_fields(self):
         if (self.db_name_entry.get() != "" and
+                self.db_name_entry.get() != self.PLACEHOLDER_DB_NAME and
                 self.validate_date(self.date_entry.get()) and
                 self.validate_number(self.number_entry.get())):
             self.error_label.configure(text="")
@@ -126,8 +142,13 @@ class buttons_frame(ctk.CTkFrame):
     def confirm_input(self):
         validInputs = self.check_input_fields()
         if validInputs:
-            print(">> Confirmed")
             self.error_label.configure(text="")
+            self.dataBase.create_database(self.db_name_entry.get(),
+                                          self.number_entry.get(),
+                                          self.date_entry.get())
+
+            self.confirm_button.configure(state="disabled")
+
         else:
             print(">> Invalid input values!")
             self.error_label.configure(text="Ungültige Eingaben!")
@@ -160,6 +181,7 @@ class buttons_frame(ctk.CTkFrame):
 
     def open_new_edit_db_window(self):
         print(">> Edit database ...")
+
 
     def open_new_set_conf_window(self):
         print(">> Configure ...")
