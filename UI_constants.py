@@ -11,9 +11,11 @@ DEF_APPEARANCE_MODE = "system"      # "dark"; "light"; "system"
 DEF_COLOR_THEME = "blue"            # "blue"; "dark-blue"; "green"
 DEF_FONT = "Futura"                 # e.g. Arial (Default); Courier; Times New Roman
 DEF_MAIN_FRAME_PADDING = [50, 10]   # [pad_x, pad_y] in pixel
+DEF_ICON_ROOT = "icons"
+DEF_ICON_NAME = "ECA_icon.png"
 
 # LABELS
-LABEL_TEXT = "Datenbank auswählen:"
+LABEL_TEXT = "ICON"
 LABEL_WIDTH = 160
 FONT_SIZE_LABEL = 16
 

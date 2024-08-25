@@ -4,8 +4,17 @@ from classes.selectDB_class import selectDB_frame
 from classes.dataBase_class import dataBase
 
 
-class App(ctk.CTk):                             # analogy: root = ctk.CTk()
+class sharedAppStates:
     def __init__(self, UI_constants):
+        self.analysisIsRunning = False
+        self.new_db_file_created = False
+        self.request_delete_db_elem = False
+        self.request_add_db_elem = False
+        self.existing_db_files = [UI_constants.PLACEHOLDER_TEXT]
+
+
+class App(ctk.CTk):     # analogy: root = ctk.CTk()
+    def __init__(self, sharedStates, UI_constants):
         """
         Initializes the application window with the specified UI constants.
 
@@ -16,6 +25,7 @@ class App(ctk.CTk):                             # analogy: root = ctk.CTk()
         None
         """
         super().__init__()
+        self.sharedAppStates = sharedStates
         self.dataBase = dataBase()
 
         # MAIN WINDOW
@@ -27,10 +37,11 @@ class App(ctk.CTk):                             # analogy: root = ctk.CTk()
         self.maxsize(UI_constants.GUI_MAX_WIDTH, UI_constants.GUI_MAX_HEIGHT)
 
         # DEFINE WIDGETS
-        self.mainFrame = main_frame(self, UI_constants)  # analogy: main_frame = ctk.CTkFrame(master=root)
+        self.mainFrame = main_frame(self, self.sharedAppStates, UI_constants)
         self.selectDB = selectDB_frame(self.mainFrame, self.dataBase, UI_constants)
         self.buttonsFrame = buttons_frame(self.mainFrame, self.dataBase, UI_constants)
-        self.buttonsFrame.callback = self.selectDB.handleDropDownState
+        self.buttonsFrame.disable_buttons_callback = self.selectDB.handleDropDownState
+        self.buttonsFrame.new_db_created_callback = self.selectDB.updateDropDownValues
 
         # RUN APP
         self.mainloop()
@@ -57,8 +68,9 @@ class App(ctk.CTk):                             # analogy: root = ctk.CTk()
 
 
 class main_frame(ctk.CTkFrame):
-    def __init__(self, parent, UI_constants):
+    def __init__(self, parent, sharedStates, UI_constants):
         super().__init__(parent)
+        self.sharedAppStates = sharedStates
         self.pack(padx=UI_constants.DEF_MAIN_FRAME_PADDING[0],
                   pady=UI_constants.DEF_MAIN_FRAME_PADDING[1],
                   fill="both", expand=False)

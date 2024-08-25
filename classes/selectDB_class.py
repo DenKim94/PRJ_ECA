@@ -1,4 +1,6 @@
 import customtkinter as ctk
+from PIL import Image, ImageTk
+import os
 
 
 class selectDB_frame(ctk.CTkFrame):
@@ -6,12 +8,13 @@ class selectDB_frame(ctk.CTkFrame):
         # analogy: frame = ctk.CTkFrame(master=root, fg_color="transparent")
         super().__init__(parent, fg_color="transparent")
         self.dataBase = dataBase
+        self.sharedStates = parent.sharedAppStates
 
         # MEMBER VARIABLES
         self.PLACEHOLDER = UI_constants.PLACEHOLDER_TEXT
-        self.analysisIsRunning = False
         self.valueListDropDown = [self.PLACEHOLDER]
         self.dropDownValue = ctk.StringVar(value=UI_constants.PLACEHOLDER_TEXT)
+        self.icon_path = os.path.join(UI_constants.DEF_ICON_ROOT, UI_constants.DEF_ICON_NAME)
 
         # UPDATE DATABASE LIST
         if self.dataBase.existing_db_files is not None:
@@ -19,12 +22,19 @@ class selectDB_frame(ctk.CTkFrame):
                 self.addDropDownValue(fileName)
 
         # WIDGETS
-        self.label_db = ctk.CTkLabel(master=self, text=UI_constants.LABEL_TEXT,
+        image = Image.open(self.icon_path)
+        # image = image.resize((50, 50))
+        # logo = ImageTk.PhotoImage(image)
+        logo = ctk.CTkImage(Image.open(self.icon_path), size=(65, 65))
+
+        self.label_db = ctk.CTkLabel(master=self,
+                                     image=logo,
+                                     text="",
                                      font=(UI_constants.DEF_FONT, UI_constants.FONT_SIZE_LABEL),
                                      width=UI_constants.LABEL_WIDTH)
 
         self.dropdown_db = ctk.CTkOptionMenu(master=self,
-                                             values=self.valueListDropDown,
+                                             values=self.sharedStates.existing_db_files,
                                              variable=self.dropDownValue,
                                              width=UI_constants.DROPDOWN_WIDTH,
                                              fg_color="gray",
@@ -46,8 +56,16 @@ class selectDB_frame(ctk.CTkFrame):
 
         self.pack(padx=5, pady=10, expand=False, side='top')
         self.label_db.pack(padx=10, pady=10, side='top')
-        self.dropdown_db.pack(padx=5, pady=10, side='right', expand=False)
-        self.button_run.pack(padx=10, pady=10, side='left')
+        self.dropdown_db.pack(padx=5, pady=5, side='right', expand=False)
+        self.button_run.pack(padx=10, pady=5, side='left')
+        self.label_db = logo
+
+        print(self.sharedStates.existing_db_files, self.sharedStates.new_db_file_created)
+
+        if self.sharedStates.new_db_file_created:
+            self.updateDropDownValues()
+            print(f">> New DB file created: {self.sharedStates.new_db_file_created}")
+            self.sharedStates.new_db_file_created = False
 
     def updateRunButtonState(self, *args):
         if self.dropDownValue.get() != self.PLACEHOLDER:
@@ -55,10 +73,13 @@ class selectDB_frame(ctk.CTkFrame):
         else:
             self.button_run.configure(state="disabled")
 
+    def updateNewDBFileState(self, state):
+        self.sharedStates.new_db_file_created = state
+
     def addDropDownValue(self, newValue):
         try:
-            if newValue not in self.valueListDropDown:
-                self.valueListDropDown.append(newValue)
+            if newValue not in self.sharedStates.existing_db_files:
+                self.sharedStates.existing_db_files.append(newValue)
 
         except Exception as err:
             print(f"Unexpected error @addDropDownValue(): {err}")
@@ -68,29 +89,29 @@ class selectDB_frame(ctk.CTkFrame):
         for fileName in existing_db_files:
             self.addDropDownValue(fileName)
 
-        self.dropdown_db.configure(values=self.valueListDropDown)
+        self.dropdown_db.configure(values=self.sharedStates.existing_db_files)
 
     def removeDropDownValue(self, valueToRemove):
         try:
-            if valueToRemove in self.valueListDropDown:
-                self.valueListDropDown.remove(valueToRemove)
+            if valueToRemove in self.sharedStates.existing_db_files:
+                self.sharedStates.existing_db_files.remove(valueToRemove)
 
                 if self.dropDownValue.get() == valueToRemove:
                     self.dropDownValue.set(self.PLACEHOLDER)
-                self.dropdown_db.configure(values=self.valueListDropDown)
+                self.dropdown_db.configure(values=self.sharedStates.existing_db_files)
 
         except Exception as err:
             print(f"Unexpected error @removeDropDownValue(): {err}")
 
     def replaceDropDownValue(self, oldValue, newValue):
         try:
-            if oldValue in self.valueListDropDown:
-                index = self.valueListDropDown.index(oldValue)
-                self.valueListDropDown[index] = newValue
+            if oldValue in self.sharedStates.existing_db_files:
+                index = self.sharedStates.existing_db_files.index(oldValue)
+                self.sharedStates.existing_db_files[index] = newValue
 
                 if self.dropDownValue.get() == oldValue:
                     self.dropDownValue.set(newValue)
-                self.dropdown_db.configure(values=self.valueListDropDown)
+                self.dropdown_db.configure(values=self.sharedStates.existing_db_files)
             else:
                 print(f"Value: {oldValue} not found!")
 
@@ -105,7 +126,4 @@ class selectDB_frame(ctk.CTkFrame):
 
     def runAnalysis(self):
         print(f">> Run Analysis for: {self.dropDownValue.get()}")
-        if not self.analysisIsRunning:
-            self.analysisIsRunning = True
 
-        # TO-DO: Set analysisIsRunning = False after finishing the analysis

@@ -7,6 +7,7 @@ class buttons_frame(ctk.CTkFrame):
         # analogy: frame = ctk.CTkFrame(master=root, fg_color="transparent")
         super().__init__(parent, fg_color="transparent")
         self.dataBase = dataBase
+        self.sharedStates = parent.sharedAppStates
 
         # CONSTANT VARIABLES
         self.GUI_MIN_WIDTH = UI_constants.GUI_MIN_WIDTH
@@ -21,17 +22,16 @@ class buttons_frame(ctk.CTkFrame):
         self.ENTRY_WIDTH = UI_constants.ENTRY_WIDTH
         self.PLACEHOLDER_DB_NAME = UI_constants.PLACEHOLDER_DB_NAME
         # WIDGETS
-        self.request_delete_db_elem = False
-        self.request_add_db_elem = False
         self.error_label = None
         self.confirm_button = None
         self.db_name_entry = None
         self.number_entry = None
         self.date_entry = None
         self.new_window = None
-        self.callback = None
+        self.new_db_created_callback = None
+        self.disable_buttons_callback = None
 
-        self.pack(padx=0, pady=50, expand=True)
+        self.pack(padx=0, pady=40, expand=True)
 
         self.button_create_new_db = ctk.CTkButton(master=self, text="Neue Datenbank",
                                                   cursor=UI_constants.CURSOR_TYPE,
@@ -47,9 +47,9 @@ class buttons_frame(ctk.CTkFrame):
                                               font=(UI_constants.DEF_FONT, UI_constants.FONT_SIZE_BUTTON),
                                               width=UI_constants.BUTTON_WIDTH, command=self.open_new_set_conf_window)
 
-        self.button_create_new_db.pack(padx=10, pady=10, side='left', expand=True)
-        self.button_edit_db.pack(padx=10, pady=10, side='left', expand=True)
-        self.button_configure.pack(padx=10, pady=10, side='left', expand=True)
+        self.button_create_new_db.pack(padx=10, pady=5, side='left', expand=True)
+        self.button_edit_db.pack(padx=10, pady=5, side='left', expand=True)
+        self.button_configure.pack(padx=10, pady=5, side='left', expand=True)
 
     def open_new_db_window(self):
         print(">> Create new database ...")
@@ -147,10 +147,16 @@ class buttons_frame(ctk.CTkFrame):
                                           self.number_entry.get(),
                                           self.date_entry.get())
 
+            self.sharedStates.new_db_file_created = True
+
+            if self.new_db_created_callback:
+                self.new_db_created_callback()
+
             self.confirm_button.configure(state="disabled")
 
         else:
             print(">> Invalid input values!")
+            self.sharedStates.new_db_file_created = False
             self.error_label.configure(text="Ungültige Eingaben!")
 
     def validate_number(self, value):
@@ -169,15 +175,15 @@ class buttons_frame(ctk.CTkFrame):
         self.button_create_new_db.configure(state="normal")
         self.button_edit_db.configure(state="normal")
         self.button_configure.configure(state="normal")
-        if self.callback:
-            self.callback(False)
+        if self.disable_buttons_callback:
+            self.disable_buttons_callback(False)
 
     def disable_buttons(self):
         self.button_create_new_db.configure(state="disabled")
         self.button_edit_db.configure(state="disabled")
         self.button_configure.configure(state="disabled")
-        if self.callback:
-            self.callback(True)
+        if self.disable_buttons_callback:
+            self.disable_buttons_callback(True)
 
     def open_new_edit_db_window(self):
         print(">> Edit database ...")
