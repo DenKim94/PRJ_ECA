@@ -74,8 +74,3 @@ class main_frame(ctk.CTkFrame):
         self.pack(padx=UI_constants.DEF_MAIN_FRAME_PADDING[0],
                   pady=UI_constants.DEF_MAIN_FRAME_PADDING[1],
                   fill="both", expand=False)
-
-
-
-
-

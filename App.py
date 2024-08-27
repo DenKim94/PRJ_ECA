@@ -6,5 +6,3 @@ import UI_constants
 if __name__ == "__main__":
     shardedAppStates = UI_class.sharedAppStates(UI_constants)
     App = UI_class.App(shardedAppStates, UI_constants)
-
-

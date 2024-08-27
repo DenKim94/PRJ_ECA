@@ -100,4 +100,3 @@ class dataBase:
             files = [file for file in os.listdir(self.subfolder_path) if os.path.isfile(os.path.join(self.subfolder_path, file))]
 
         return files
-

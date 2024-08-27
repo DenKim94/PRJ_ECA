@@ -14,6 +14,10 @@ DEF_MAIN_FRAME_PADDING = [50, 10]   # [pad_x, pad_y] in pixel
 DEF_ICON_ROOT = "icons"
 DEF_ICON_NAME = "ECA_icon.png"
 
+# ICON
+ICON_WIDTH = 65
+ICON_HEIGHT = 65
+
 # LABELS
 LABEL_TEXT = "ICON"
 LABEL_WIDTH = 160

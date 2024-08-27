@@ -1,5 +1,6 @@
 import customtkinter as ctk
 import datetime
+import classes.generic_widgets as gen_widgets
 
 
 class buttons_frame(ctk.CTkFrame):
@@ -27,7 +28,11 @@ class buttons_frame(ctk.CTkFrame):
         self.db_name_entry = None
         self.number_entry = None
         self.date_entry = None
-        self.new_window = None
+        self.new_db = None
+        self.edit_db = None
+        self.config_db = None
+        self.add_button = None
+        self.delete_button = None
         self.new_db_created_callback = None
         self.disable_buttons_callback = None
 
@@ -53,18 +58,12 @@ class buttons_frame(ctk.CTkFrame):
 
     def open_new_db_window(self):
         print(">> Create new database ...")
-        self.new_window = ctk.CTkToplevel(self.master)
-        self.new_window.title("Neue Datenbank erstellen")
-        self.new_window.geometry(self.master.master.geometry())
-        self.new_window.minsize(self.GUI_MIN_WIDTH, self.GUI_MIN_HEIGHT)
-        self.new_window.maxsize(self.GUI_MAX_WIDTH, self.GUI_MAX_HEIGHT)
+        self.new_db = gen_widgets.newWindow(self.master)
+        self.new_db.window.title("Neue Datenbank erstellen")
         self.disable_buttons()
-        # Create a container to hold the input fields
-        container = ctk.CTkFrame(master=self.new_window, fg_color="transparent")
-        container.pack(side='top', padx=10, pady=10, expand=True)
 
         # Create the first input field (database name)
-        frame = ctk.CTkFrame(master=container, fg_color="transparent")
+        frame = ctk.CTkFrame(master=self.new_db.container, fg_color="transparent")
         frame.pack(side='top', padx=5, pady=5)
         db_name_label = ctk.CTkLabel(master=frame, font=(self.DEF_FONT, self.FONT_SIZE_BUTTON),
                                      text="Name der neuen Datenbank:",
@@ -78,7 +77,7 @@ class buttons_frame(ctk.CTkFrame):
         self.db_name_entry.pack(padx=5, pady=5, expand=True)
 
         # Create the second and third input fields (date and number)
-        frame = ctk.CTkFrame(master=container, fg_color="transparent")
+        frame = ctk.CTkFrame(master=self.new_db.container, fg_color="transparent")
         frame.pack(side='top', padx=5, pady=5)
         number_label = ctk.CTkLabel(master=frame, font=(self.DEF_FONT, self.FONT_SIZE_BUTTON),
                                     text="Zählerstand (Initialwert) in kWh:")
@@ -88,7 +87,7 @@ class buttons_frame(ctk.CTkFrame):
                                          justify="center")
         self.number_entry.pack(side='top', padx=5, pady=5, expand=True)
         self.number_entry.configure(validate="key",
-                                    validatecommand=(self.new_window.register(self.validate_number), '%P'))
+                                    validatecommand=(self.new_db.window.register(self.validate_number), '%P'))
 
         date_label = ctk.CTkLabel(master=frame, font=(self.DEF_FONT, self.FONT_SIZE_BUTTON),
                                   text="Datum:", width=self.ENTRY_WIDTH)
@@ -97,12 +96,12 @@ class buttons_frame(ctk.CTkFrame):
                                        width=self.ENTRY_WIDTH,
                                        justify="center")
         self.date_entry.configure(validate="focusout",
-                                  validatecommand=(self.new_window.register(self.validate_date), '%P'))
+                                  validatecommand=(self.new_db.window.register(self.validate_date), '%P'))
         self.date_entry.pack(side='top', padx=5, pady=5, expand=True)
         self.date_entry.insert(0, datetime.datetime.now().strftime("%d.%m.%Y"))
 
         # Create the confirm button
-        self.confirm_button = ctk.CTkButton(master=container, text="Bestätigen",
+        self.confirm_button = ctk.CTkButton(master=self.new_db.container, text="Bestätigen",
                                             state="normal",
                                             cursor=self.CURSOR_TYPE,
                                             font=(self.DEF_FONT, self.FONT_SIZE_BUTTON),
@@ -111,10 +110,10 @@ class buttons_frame(ctk.CTkFrame):
 
         self.confirm_button.pack(side='bottom', padx=5, pady=10)
 
-        self.error_label = ctk.CTkLabel(master=container, text="", text_color="red")
+        self.error_label = ctk.CTkLabel(master=self.new_db.container, text="", text_color="red")
         self.error_label.pack(side='bottom', padx=5, pady=0)
 
-        self.new_window.protocol("WM_DELETE_WINDOW", self.enable_buttons)
+        self.new_db.window.protocol("WM_DELETE_WINDOW", self.enable_buttons)
         # Set up the check for input fields
         self.db_name_entry.after(100, self.check_input_fields)
         self.date_entry.after(100, self.check_input_fields)
@@ -171,12 +170,17 @@ class buttons_frame(ctk.CTkFrame):
             return False
 
     def enable_buttons(self):
-        self.new_window.destroy()
-        self.button_create_new_db.configure(state="normal")
-        self.button_edit_db.configure(state="normal")
-        self.button_configure.configure(state="normal")
-        if self.disable_buttons_callback:
-            self.disable_buttons_callback(False)
+        try:
+            current_widget = self.focus_get()
+            current_widget.destroy()
+            self.button_create_new_db.configure(state="normal")
+            self.button_edit_db.configure(state="normal")
+            self.button_configure.configure(state="normal")
+            if self.disable_buttons_callback:
+                self.disable_buttons_callback(False)
+
+        except AttributeError:
+            print(">> Error: No widget in focus!")
 
     def disable_buttons(self):
         self.button_create_new_db.configure(state="disabled")
@@ -187,7 +191,38 @@ class buttons_frame(ctk.CTkFrame):
 
     def open_new_edit_db_window(self):
         print(">> Edit database ...")
+        self.edit_db = gen_widgets.newWindow(self.master)
+        self.edit_db.window.title("Gewählte Datenbank bearbeiten")
+        self.disable_buttons()
 
+        frame = ctk.CTkFrame(master=self.edit_db.container, fg_color="transparent")
+        frame.pack(side='top', padx=5, pady=5)
+        edit_label = ctk.CTkLabel(master=frame, font=(self.DEF_FONT, self.FONT_SIZE_BUTTON),
+                                  text="Bitte auswählen:",
+                                  width=self.ENTRY_WIDTH)
+        edit_label.pack(side='top', padx=5, pady=5)
+        self.add_button = ctk.CTkButton(master=self.edit_db.container, text="Daten hinzufügen",
+                                        state="normal",
+                                        cursor=self.CURSOR_TYPE,
+                                        font=(self.DEF_FONT, self.FONT_SIZE_BUTTON),
+                                        width=self.BUTTON_WIDTH,
+                                        command=self.open_add_elem_window)
+
+        self.add_button.pack(side='left', padx=10, pady=5)
+        self.delete_button = ctk.CTkButton(master=self.edit_db.container, text="Daten entfernen",
+                                           state="normal",
+                                           cursor=self.CURSOR_TYPE,
+                                           font=(self.DEF_FONT, self.FONT_SIZE_BUTTON),
+                                           width=self.BUTTON_WIDTH,
+                                           command=self.open_delete_elem_window)
+        self.delete_button.pack(side='left', padx=10, pady=5)
+        self.edit_db.window.protocol("WM_DELETE_WINDOW", self.enable_buttons)
+
+    def open_add_elem_window(self):
+        print(">> Add new elements window ...")
+
+    def open_delete_elem_window(self):
+        print(">> Delete elements window ...")
 
     def open_new_set_conf_window(self):
         print(">> Configure ...")

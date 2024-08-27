@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from PIL import Image, ImageTk
+from PIL import Image
 import os
 
 
@@ -22,10 +22,7 @@ class selectDB_frame(ctk.CTkFrame):
                 self.addDropDownValue(fileName)
 
         # WIDGETS
-        image = Image.open(self.icon_path)
-        # image = image.resize((50, 50))
-        # logo = ImageTk.PhotoImage(image)
-        logo = ctk.CTkImage(Image.open(self.icon_path), size=(65, 65))
+        logo = ctk.CTkImage(Image.open(self.icon_path), size=(UI_constants.ICON_WIDTH, UI_constants.ICON_HEIGHT))
 
         self.label_db = ctk.CTkLabel(master=self,
                                      image=logo,
@@ -126,4 +123,5 @@ class selectDB_frame(ctk.CTkFrame):
 
     def runAnalysis(self):
         print(f">> Run Analysis for: {self.dropDownValue.get()}")
+
 
