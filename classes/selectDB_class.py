@@ -15,6 +15,7 @@ class selectDB_frame(ctk.CTkFrame):
         self.valueListDropDown = [self.PLACEHOLDER]
         self.dropDownValue = ctk.StringVar(value=UI_constants.PLACEHOLDER_TEXT)
         self.icon_path = os.path.join(UI_constants.DEF_ICON_ROOT, UI_constants.DEF_ICON_NAME)
+        self.update_edit_button_state_callback = None
 
         # UPDATE DATABASE LIST
         if self.dataBase.existing_db_files is not None:
@@ -65,10 +66,16 @@ class selectDB_frame(ctk.CTkFrame):
             self.sharedStates.new_db_file_created = False
 
     def updateRunButtonState(self, *args):
-        if self.dropDownValue.get() != self.PLACEHOLDER:
+        self.sharedStates.dropDownState = self.dropDownValue.get()
+        if self.sharedStates.dropDownState != self.PLACEHOLDER:
             self.button_run.configure(state="normal")
+
+            if self.update_edit_button_state_callback is not None:
+                self.update_edit_button_state_callback(True)
         else:
             self.button_run.configure(state="disabled")
+            if self.update_edit_button_state_callback is not None:
+                self.update_edit_button_state_callback(False)
 
     def updateNewDBFileState(self, state):
         self.sharedStates.new_db_file_created = state

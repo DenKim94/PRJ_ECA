@@ -22,6 +22,10 @@ class buttons_frame(ctk.CTkFrame):
         self.ENTRY_WIDTH_DB = UI_constants.ENTRY_WIDTH_DB
         self.ENTRY_WIDTH = UI_constants.ENTRY_WIDTH
         self.PLACEHOLDER_DB_NAME = UI_constants.PLACEHOLDER_DB_NAME
+        self.dropDownValue = ctk.StringVar(value=self.sharedStates.dropDownState)
+        self.dropDownValue_placeholder = UI_constants.PLACEHOLDER_TEXT
+        self.min_size_edit_window = [380, 160]  # [width, height]
+        self.max_size_edit_window = [380, 160]  # [width, height]
         # WIDGETS
         self.error_label = None
         self.confirm_button = None
@@ -55,6 +59,15 @@ class buttons_frame(ctk.CTkFrame):
         self.button_create_new_db.pack(padx=10, pady=5, side='left', expand=True)
         self.button_edit_db.pack(padx=10, pady=5, side='left', expand=True)
         self.button_configure.pack(padx=10, pady=5, side='left', expand=True)
+
+        self.updateEditButtonState()
+
+    # METHODS
+    def updateEditButtonState(self, isEnabled=False):
+        if isEnabled:
+            self.button_edit_db.configure(state="normal")
+        else:
+            self.button_edit_db.configure(state="disabled")
 
     def open_new_db_window(self):
         print(">> Create new database ...")
@@ -180,7 +193,7 @@ class buttons_frame(ctk.CTkFrame):
                 self.disable_buttons_callback(False)
 
         except AttributeError:
-            print(">> Error: No widget in focus!")
+            print(">> Warning: No widget in focus!")
 
     def disable_buttons(self):
         self.button_create_new_db.configure(state="disabled")
@@ -191,9 +204,10 @@ class buttons_frame(ctk.CTkFrame):
 
     def open_new_edit_db_window(self):
         print(">> Edit database ...")
-        self.edit_db = gen_widgets.newWindow(self.master)
+        self.edit_db = gen_widgets.newWindow(self.master, self.min_size_edit_window, self.max_size_edit_window)
         self.edit_db.window.title("Gewählte Datenbank bearbeiten")
         self.disable_buttons()
+        gen_widgets.newWindow.center_window(self.edit_db.window, self.max_size_edit_window[0], self.max_size_edit_window[1])
 
         frame = ctk.CTkFrame(master=self.edit_db.container, fg_color="transparent")
         frame.pack(side='top', padx=5, pady=5)

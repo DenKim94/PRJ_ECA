@@ -2,6 +2,7 @@ import customtkinter as ctk
 from classes.buttons_class import buttons_frame
 from classes.selectDB_class import selectDB_frame
 from classes.dataBase_class import dataBase
+import classes.generic_widgets as gen_widgets
 
 
 class sharedAppStates:
@@ -10,6 +11,7 @@ class sharedAppStates:
         self.new_db_file_created = False
         self.request_delete_db_elem = False
         self.request_add_db_elem = False
+        self.dropDownState = None
         self.existing_db_files = [UI_constants.PLACEHOLDER_TEXT]
 
 
@@ -32,7 +34,7 @@ class App(ctk.CTk):     # analogy: root = ctk.CTk()
         ctk.set_appearance_mode(UI_constants.DEF_APPEARANCE_MODE)
         ctk.set_default_color_theme(UI_constants.DEF_COLOR_THEME)
         self.title(UI_constants.GUI_TITLE)      # analogy: root.title(UI_constants.GUI_TITLE)
-        self.centerUI_geometry(UI_constants.GUI_WIDTH, UI_constants.GUI_HEIGHT)
+        gen_widgets.newWindow.center_window(self, UI_constants.GUI_WIDTH, UI_constants.GUI_HEIGHT)
         self.minsize(UI_constants.GUI_MIN_WIDTH, UI_constants.GUI_MIN_HEIGHT)
         self.maxsize(UI_constants.GUI_MAX_WIDTH, UI_constants.GUI_MAX_HEIGHT)
 
@@ -42,29 +44,10 @@ class App(ctk.CTk):     # analogy: root = ctk.CTk()
         self.buttonsFrame = buttons_frame(self.mainFrame, self.dataBase, UI_constants)
         self.buttonsFrame.disable_buttons_callback = self.selectDB.handleDropDownState
         self.buttonsFrame.new_db_created_callback = self.selectDB.updateDropDownValues
+        self.selectDB.update_edit_button_state_callback = self.buttonsFrame.updateEditButtonState
 
         # RUN APP
         self.mainloop()
-
-    def getScreenSize(self):
-        try:
-            screenWidth = self.winfo_screenwidth()
-            screenHeight = self.winfo_screenheight()
-
-            return [screenWidth, screenHeight]
-
-        except Exception as err:
-            print(f"Unexpected error @getScreenSize(): {err}")
-
-    def centerUI_geometry(self, windowWidth, windowHeight):
-        try:
-            [screenWidth, screenHeight] = self.getScreenSize()
-            offset_x = int(abs((windowWidth / 2) - (screenWidth / 2)))
-            offset_y = int(abs((windowHeight / 2) - (screenHeight / 2)))
-            self.geometry(f"{windowWidth}x{windowHeight}+{offset_x}+{offset_y}")
-
-        except Exception as err:
-            print(f"Unexpected error @centerUI(): {err}")
 
 
 class main_frame(ctk.CTkFrame):
