@@ -48,6 +48,7 @@ class App(ctk.CTk):     # analogy: root = ctk.CTk()
             self.buttonsFrame.disable_buttons_callback = self.selectDB.handleDropDownState
             self.buttonsFrame.new_db_created_callback = self.selectDB.updateDropDownValues
             self.selectDB.update_edit_button_state_callback = self.buttonsFrame.updateEditButtonState
+            self.buttonsFrame.update_run_button_state_callback = self.selectDB.updateRunButtonState
 
             # RUN APP
             self.mainloop()

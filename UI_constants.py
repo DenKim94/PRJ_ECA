@@ -1,5 +1,5 @@
 # GENERAL
-CREATE_LOG_FILE = False   # TO-DO
+CREATE_LOG_FILE = False   # Optional: Create log file for debugging (To-Do)
 GUI_TITLE = "Energy Costs Analyzer"
 GUI_WIDTH = 550
 GUI_HEIGHT = 350
@@ -44,7 +44,7 @@ ENTRY_WIDTH_DB = 280
 DEF_INIT_ELEM_ID = 1
 
 # EDIT DATABASE WINDOW
-MIN_WINDOW_SIZE = [380, 160]  # [width, height]
-MAX_WINDOW_SIZE = [380, 160]  # [width, height]
+MIN_WINDOW_SIZE = [420, 250]  # [width, height] in pixel
+MAX_WINDOW_SIZE = [420, 250]  # [width, height] in pixel
 
 

@@ -67,18 +67,22 @@ class selectDB_frame(ctk.CTkFrame):
         except Exception as err:
             print(f">> Unexpected error @selectDB_frame: {err}")
 
-    def updateRunButtonState(self, *args):
+    def updateRunButtonState(self, *args, disable_run_button=False):
         try:
             self.sharedStates.dropDownState = self.dropDownValue.get()
             if self.sharedStates.dropDownState != self.PLACEHOLDER:
-                self.button_run.configure(state="normal")
+                if not disable_run_button:
+                    self.button_run.configure(state="normal")
+                else:
+                    self.button_run.configure(state="disabled")
 
-                if self.update_edit_button_state_callback is not None:
+                if self.update_edit_button_state_callback is not None and not disable_run_button:
                     self.update_edit_button_state_callback(True)
             else:
                 self.button_run.configure(state="disabled")
                 if self.update_edit_button_state_callback is not None:
                     self.update_edit_button_state_callback(False)
+
         except Exception as err:
             print(f">> Unexpected error @updateRunButtonState: {err}")
 

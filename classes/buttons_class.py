@@ -32,6 +32,8 @@ class buttons_frame(ctk.CTkFrame):
             self.date_entry = None
             self.new_db = None
             self.edit_db = None
+            self.update_run_button_state_callback = None
+            self.edit_button_enabled = False
             self.config_db = None
             self.add_button = None
             self.delete_button = None
@@ -46,13 +48,15 @@ class buttons_frame(ctk.CTkFrame):
                                                       width=UI_constants.BUTTON_WIDTH,
                                                       command=self.open_new_db_window)
 
-            self.button_edit_db = ctk.CTkButton(master=self, text="Datenbank bearbeiten", cursor=UI_constants.CURSOR_TYPE,
+            self.button_edit_db = ctk.CTkButton(master=self, text="Datenbank bearbeiten",
+                                                cursor=UI_constants.CURSOR_TYPE,
                                                 font=(UI_constants.DEF_FONT, UI_constants.FONT_SIZE_BUTTON),
                                                 width=UI_constants.BUTTON_WIDTH, command=self.open_new_edit_db_window)
 
             self.button_configure = ctk.CTkButton(master=self, text="Einstellungen", cursor=UI_constants.CURSOR_TYPE,
                                                   font=(UI_constants.DEF_FONT, UI_constants.FONT_SIZE_BUTTON),
-                                                  width=UI_constants.BUTTON_WIDTH, command=self.open_new_set_conf_window)
+                                                  width=UI_constants.BUTTON_WIDTH,
+                                                  command=self.open_new_set_conf_window)
 
             self.button_create_new_db.pack(padx=10, pady=5, side='left', expand=True)
             self.button_edit_db.pack(padx=10, pady=5, side='left', expand=True)
@@ -69,6 +73,9 @@ class buttons_frame(ctk.CTkFrame):
                 self.button_edit_db.configure(state="normal")
             else:
                 self.button_edit_db.configure(state="disabled")
+
+            self.edit_button_enabled = isEnabled
+
         except Exception as err:
             print(f">> Unexpected error @updateEditButtonState: {err}")
 
@@ -80,8 +87,14 @@ class buttons_frame(ctk.CTkFrame):
             current_widget = self.focus_get()
             current_widget.destroy()
             self.button_create_new_db.configure(state="normal")
-            self.button_edit_db.configure(state="normal")
             self.button_configure.configure(state="normal")
+
+            if self.update_run_button_state_callback is not None:
+                self.update_run_button_state_callback(disable_run_button=False)
+
+            if self.edit_button_enabled:
+                self.button_edit_db.configure(state="normal")
+
             if self.disable_buttons_callback:
                 self.disable_buttons_callback(False)
 
@@ -92,6 +105,10 @@ class buttons_frame(ctk.CTkFrame):
         self.button_create_new_db.configure(state="disabled")
         self.button_edit_db.configure(state="disabled")
         self.button_configure.configure(state="disabled")
+
+        if self.update_run_button_state_callback is not None:
+            self.update_run_button_state_callback(disable_run_button=True)
+
         if self.disable_buttons_callback:
             self.disable_buttons_callback(True)
 
