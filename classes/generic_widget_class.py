@@ -4,25 +4,29 @@ import UI_constants
 
 class newWindow:
     def __init__(self, parent, min_size=None, max_size=None):
-        # WINDOW SIZE
-        if min_size is None:
-            min_size = [UI_constants.GUI_MIN_WIDTH, UI_constants.GUI_MIN_HEIGHT]
+        try:
+            # WINDOW SIZE
+            if min_size is None:
+                min_size = [UI_constants.GUI_MIN_WIDTH, UI_constants.GUI_MIN_HEIGHT]
 
-        if max_size is None:
-            max_size = [UI_constants.GUI_MAX_WIDTH, UI_constants.GUI_MAX_HEIGHT]
+            if max_size is None:
+                max_size = [UI_constants.GUI_MAX_WIDTH, UI_constants.GUI_MAX_HEIGHT]
 
-        self.GUI_MIN_WIDTH = min_size[0]
-        self.GUI_MIN_HEIGHT = min_size[1]
-        self.GUI_MAX_WIDTH = max_size[0]
-        self.GUI_MAX_HEIGHT = max_size[1]
+            self.GUI_MIN_WIDTH = min_size[0]
+            self.GUI_MIN_HEIGHT = min_size[1]
+            self.GUI_MAX_WIDTH = max_size[0]
+            self.GUI_MAX_HEIGHT = max_size[1]
 
-        self.window = ctk.CTkToplevel(parent)
-        self.window.geometry(parent.master.geometry())
-        self.window.minsize(self.GUI_MIN_WIDTH, self.GUI_MIN_HEIGHT)
-        self.window.maxsize(self.GUI_MAX_WIDTH, self.GUI_MAX_HEIGHT)
+            self.window = ctk.CTkToplevel(parent)
+            self.window.geometry(parent.master.geometry())
+            self.window.minsize(self.GUI_MIN_WIDTH, self.GUI_MIN_HEIGHT)
+            self.window.maxsize(self.GUI_MAX_WIDTH, self.GUI_MAX_HEIGHT)
 
-        self.container = ctk.CTkFrame(master=self.window, fg_color="transparent")
-        self.container.pack(side='top', padx=10, pady=10, expand=True)
+            self.container = ctk.CTkFrame(master=self.window, fg_color="transparent")
+            self.container.pack(side='top', padx=10, pady=10, expand=True)
+
+        except Exception as err:
+            print(f">> Unexpected error @newWindow: {err}")
 
     @staticmethod
     def center_window(windowObj, windowWidth, windowHeight):

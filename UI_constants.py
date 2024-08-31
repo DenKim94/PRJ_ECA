@@ -43,6 +43,8 @@ DEF_TABLE_NAME = "used_energy"
 ENTRY_WIDTH_DB = 280
 DEF_INIT_ELEM_ID = 1
 
-
+# EDIT DATABASE WINDOW
+MIN_WINDOW_SIZE = [380, 160]  # [width, height]
+MAX_WINDOW_SIZE = [380, 160]  # [width, height]
 
 

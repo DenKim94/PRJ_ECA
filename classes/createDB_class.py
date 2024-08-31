@@ -79,7 +79,7 @@ class newDatabaseWindow:
             self.number_entry.after(100, self.check_input_fields)
 
         except Exception as err:
-            print(f">> Unexpected error @createDB_class: {err}")
+            print(f">> Unexpected error @newDatabaseWindow: {err}")
 
     def check_input_fields(self):
         if (self.db_name_entry.get() != "" and
@@ -116,7 +116,6 @@ class newDatabaseWindow:
             self.confirm_button.configure(state="disabled")
 
         else:
-            print(">> Invalid input values!")
             self.master.sharedStates.new_db_file_created = False
             self.error_label.configure(text="Ungültige Eingaben!")
 

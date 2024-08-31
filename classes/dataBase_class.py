@@ -76,6 +76,7 @@ class dataBase:
             """, (elem_id,))
             result = self.cursor.fetchone()  # [date, energy_value]
             return result
+
         except sqlite3.OperationalError as err:
             raise Exception(f"Unexpected error @get_values_by_elem_id(): {err}")
 
