@@ -2,7 +2,7 @@ import customtkinter as ctk
 from classes.buttons_class import buttons_frame
 from classes.selectDB_class import selectDB_frame
 from classes.dataBase_class import dataBase
-import classes.generic_widgets as gen_widgets
+import classes.generic_widget_class as gen_widgets
 
 
 class sharedAppStates:
@@ -27,6 +27,7 @@ class App(ctk.CTk):     # analogy: root = ctk.CTk()
         None
         """
         super().__init__()
+        print("############## Initializing Energy Costs Analyzer ##############")
         self.sharedAppStates = sharedStates
         self.dataBase = dataBase()
 

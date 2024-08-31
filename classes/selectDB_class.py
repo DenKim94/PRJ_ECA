@@ -58,8 +58,6 @@ class selectDB_frame(ctk.CTkFrame):
         self.button_run.pack(padx=10, pady=5, side='left')
         self.label_db = logo
 
-        print(self.sharedStates.existing_db_files, self.sharedStates.new_db_file_created)
-
         if self.sharedStates.new_db_file_created:
             self.updateDropDownValues()
             print(f">> New DB file created: {self.sharedStates.new_db_file_created}")
