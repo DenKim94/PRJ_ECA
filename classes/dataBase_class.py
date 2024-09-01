@@ -98,6 +98,56 @@ class dataBase:
     def get_existing_db_files(self):
         files = None
         if self._check_for_existing_db():
-            files = [file for file in os.listdir(self.subfolder_path) if os.path.isfile(os.path.join(self.subfolder_path, file))]
+            files = [file for file in os.listdir(self.subfolder_path)
+                     if os.path.isfile(os.path.join(self.subfolder_path, file))
+                     and file.endswith('.db')]
 
         return files
+
+    def add_data_to_existing_db(self, db_name, new_date, new_energy_value):
+        try:
+            print(f"Selected database name: {db_name}")
+            print(f"new_date: {new_date}")
+            print(f"new_energy_value: {new_energy_value}")
+
+            # Open the existing database
+            self.open_database(db_name)
+
+            # Update the values in the table
+            self.cursor.execute(f"""
+                INSERT INTO {self.table_name} (date, energy_value)
+                VALUES (?, ?)
+            """, (new_date, new_energy_value))
+            self.connector.commit()
+
+        except sqlite3.OperationalError as err:
+            raise Exception(f"Unexpected error @open_and_adjust_existing_db(): {err}")
+        finally:
+            self.connector.close()
+
+    def open_database(self, db_name):
+        try:
+            # Check if the database exists
+            if not self._check_for_existing_db():
+                raise Exception(f"Database {db_name} does not exist")
+
+            self.db_name = f"{db_name}"
+            self.db_path = os.path.join(self.subfolder_path, self.db_name)
+            self.connector = sqlite3.connect(self.db_path)
+            self.cursor = self.connector.cursor()
+
+        except sqlite3.OperationalError as err:
+            raise Exception(f"Unexpected error @open_selected_database(): {err}")
+
+    def get_last_elem_id(self):
+        try:
+            self.cursor.execute(f"""
+                SELECT elem_id FROM {self.table_name}
+                ORDER BY date DESC
+                LIMIT 1
+            """)
+            result = self.cursor.fetchone()  # [elem_id]
+            return result[0] if result else None
+
+        except sqlite3.OperationalError as err:
+            raise Exception(f"Unexpected error @get_last_elem_id(): {err}")

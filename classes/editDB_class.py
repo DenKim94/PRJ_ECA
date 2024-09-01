@@ -67,7 +67,6 @@ class editDatabaseWindow:
         gen_widgets.newWindow.center_window(self.add_db_elem.window, self.master.max_size_edit_window[0],
                                             self.master.max_size_edit_window[1])
 
-        self.add_db_elem.window.protocol("WM_DELETE_WINDOW", self.master.enable_buttons)
         frame = ctk.CTkFrame(master=self.add_db_elem.container, fg_color="transparent")
         frame.pack(side='top', padx=5, pady=5)
 
@@ -109,12 +108,21 @@ class editDatabaseWindow:
                                         command=self.add_input)
 
         self.add_button.pack(side='bottom', padx=5, pady=5)
+        self.add_db_elem.window.protocol("WM_DELETE_WINDOW", self.master.enable_buttons)
 
     def add_input(self):
         if (gen_widgets.newWindow.validate_date(self.error_label, self.date_entry.get()) and
                 gen_widgets.newWindow.validate_number(self.error_label, self.number_entry.get())):
             self.error_label.configure(text="")
             print(">> add_input ...")
+            selected_db_name = self.master.sharedStates.selectedDataBase
+            self.master.dataBase.add_data_to_existing_db(selected_db_name,
+                                                         self.date_entry.get(),
+                                                         self.number_entry.get())
+
+            self.add_button.configure(state="disabled")
+            self.master.enable_buttons()
+            self.add_db_elem.window.destroy()
 
         else:
             self.error_label.configure(text="Ungültige Eingabe!")

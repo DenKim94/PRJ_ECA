@@ -19,7 +19,7 @@ class buttons_frame(ctk.CTkFrame):
             self.ENTRY_WIDTH = UI_constants.ENTRY_WIDTH
 
             # PARAMETERS
-            self.dropDownValue = ctk.StringVar(value=self.sharedStates.dropDownState)
+            self.dropDownValue = ctk.StringVar(value=self.sharedStates.selectedDataBase)
             self.dropDownValue_placeholder = UI_constants.PLACEHOLDER_TEXT
             self.min_size_edit_window = UI_constants.MIN_WINDOW_SIZE
             self.max_size_edit_window = UI_constants.MAX_WINDOW_SIZE

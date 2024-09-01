@@ -69,8 +69,8 @@ class selectDB_frame(ctk.CTkFrame):
 
     def updateRunButtonState(self, *args, disable_run_button=False):
         try:
-            self.sharedStates.dropDownState = self.dropDownValue.get()
-            if self.sharedStates.dropDownState != self.PLACEHOLDER:
+            self.sharedStates.selectedDataBase = self.dropDownValue.get()
+            if self.sharedStates.selectedDataBase != self.PLACEHOLDER:
                 if not disable_run_button:
                     self.button_run.configure(state="normal")
                 else:

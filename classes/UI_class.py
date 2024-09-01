@@ -12,7 +12,7 @@ class sharedAppStates:
         self.new_db_file_created = False
         self.request_delete_db_elem = False
         self.request_add_db_elem = False
-        self.dropDownState = None
+        self.selectedDataBase = None
         self.existing_db_files = [UI_constants.PLACEHOLDER_TEXT]
 
 
