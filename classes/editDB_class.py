@@ -14,6 +14,8 @@ class editDatabaseWindow:
         self.CURSOR_TYPE = UI_constants.CURSOR_TYPE
         self.min_size_add_window = UI_constants.MIN_WINDOW_SIZE
         self.max_size_add_window = UI_constants.MAX_WINDOW_SIZE
+        self.energy_value = None
+        self.date_value = None
 
         # WIDGETS
         self.add_db_elem = None
@@ -55,77 +57,86 @@ class editDatabaseWindow:
             self.edit_db.window.protocol("WM_DELETE_WINDOW", self.master.enable_buttons)
 
         except Exception as err:
-            print(f">> Unexpected error @editDatabaseWindow: {err}")
+            raise Exception(f">> Unexpected error @editDatabaseWindow: {err}")
 
     def open_add_elem_window(self):
-        print(">> Add new elements window ...")
-        self.edit_db.window.destroy()
-        self.add_db_elem = gen_widgets.newWindow(self.master.master, self.min_size_add_window,
-                                                 self.max_size_add_window)
-        self.add_db_elem.window.title("Daten hinzufügen")
-        # self.master.disable_buttons()
-        gen_widgets.newWindow.center_window(self.add_db_elem.window, self.master.max_size_edit_window[0],
-                                            self.master.max_size_edit_window[1])
+        try:
+            self.edit_db.window.destroy()
+            self.add_db_elem = gen_widgets.newWindow(self.master.master, self.min_size_add_window,
+                                                     self.max_size_add_window)
+            self.add_db_elem.window.title("Daten hinzufügen")
+            # self.master.disable_buttons()
+            gen_widgets.newWindow.center_window(self.add_db_elem.window, self.master.max_size_edit_window[0],
+                                                self.master.max_size_edit_window[1])
 
-        frame = ctk.CTkFrame(master=self.add_db_elem.container, fg_color="transparent")
-        frame.pack(side='top', padx=5, pady=5)
+            frame = ctk.CTkFrame(master=self.add_db_elem.container, fg_color="transparent")
+            frame.pack(side='top', padx=5, pady=5)
 
-        self.error_label = ctk.CTkLabel(master=self.add_db_elem.container, text="", text_color="red")
+            self.error_label = ctk.CTkLabel(master=self.add_db_elem.container, text="", text_color="red")
 
-        date_label = ctk.CTkLabel(master=frame, font=(self.DEF_FONT, self.FONT_SIZE_BUTTON),
-                                  text="Datum:", width=self.ENTRY_WIDTH)
-        date_label.pack(side='top', padx=5, pady=5)
-        self.date_entry = ctk.CTkEntry(master=frame,
-                                       width=self.ENTRY_WIDTH,
-                                       justify="center")
-        self.date_entry.configure(validate="focusout",
-                                  validatecommand=(self.add_db_elem.window.register(
-                                      lambda value: gen_widgets.newWindow.validate_date(
-                                          self.error_label, self.date_entry.get())), '%P'))
+            date_label = ctk.CTkLabel(master=frame, font=(self.DEF_FONT, self.FONT_SIZE_BUTTON),
+                                      text="Datum:", width=self.ENTRY_WIDTH)
+            date_label.pack(side='top', padx=5, pady=5)
+            self.date_entry = ctk.CTkEntry(master=frame,
+                                           width=self.ENTRY_WIDTH,
+                                           justify="center")
+            self.date_entry.configure(validate="focusout",
+                                      validatecommand=(self.add_db_elem.window.register(
+                                          lambda value: gen_widgets.newWindow.validate_date(
+                                              self.error_label, self.date_entry.get())), '%P'))
 
-        self.date_entry.pack(side='top', padx=5, pady=5, expand=True)
-        self.date_entry.insert(0, datetime.datetime.now().strftime("%d.%m.%Y"))
+            self.date_entry.pack(side='top', padx=5, pady=5, expand=True)
+            self.date_entry.insert(0, datetime.datetime.now().strftime("%d.%m.%Y"))
 
-        number_label = ctk.CTkLabel(master=frame, font=(self.DEF_FONT, self.FONT_SIZE_BUTTON),
-                                    text="Zählerstand in kWh:")
-        number_label.pack(side='top', padx=5, pady=5)
-        self.number_entry = ctk.CTkEntry(master=frame,
-                                         width=self.ENTRY_WIDTH,
-                                         justify="center")
-        self.number_entry.pack(side='top', padx=5, pady=5, expand=True)
-        self.number_entry.configure(validate="focusout",
-                                    validatecommand=(self.add_db_elem.window.register(
-                                        lambda value: gen_widgets.newWindow.validate_number(
-                                            self.error_label, self.number_entry.get())), '%P'))
+            number_label = ctk.CTkLabel(master=frame, font=(self.DEF_FONT, self.FONT_SIZE_BUTTON),
+                                        text="Zählerstand in kWh:")
+            number_label.pack(side='top', padx=5, pady=5)
+            self.number_entry = ctk.CTkEntry(master=frame,
+                                             width=self.ENTRY_WIDTH,
+                                             justify="center")
+            self.number_entry.pack(side='top', padx=5, pady=5, expand=True)
+            self.number_entry.configure(validate="focusout",
+                                        validatecommand=(self.add_db_elem.window.register(
+                                            lambda value: gen_widgets.newWindow.validate_number(
+                                                self.error_label, self.number_entry.get())), '%P'))
 
-        self.error_label.pack(side='top', padx=5, pady=0)
+            self.error_label.pack(side='top', padx=5, pady=0)
 
-        self.add_button = ctk.CTkButton(master=self.add_db_elem.container, text="OK",
-                                        state="normal",
-                                        cursor=self.CURSOR_TYPE,
-                                        font=(self.DEF_FONT, self.FONT_SIZE_BUTTON),
-                                        width=self.BUTTON_WIDTH,
-                                        command=self.add_input)
+            self.add_button = ctk.CTkButton(master=self.add_db_elem.container, text="OK",
+                                            state="normal",
+                                            cursor=self.CURSOR_TYPE,
+                                            font=(self.DEF_FONT, self.FONT_SIZE_BUTTON),
+                                            width=self.BUTTON_WIDTH,
+                                            command=self.add_input)
 
-        self.add_button.pack(side='bottom', padx=5, pady=5)
-        self.add_db_elem.window.protocol("WM_DELETE_WINDOW", self.master.enable_buttons)
+            self.add_button.pack(side='bottom', padx=5, pady=5)
+            self.add_db_elem.window.protocol("WM_DELETE_WINDOW", self.master.enable_buttons)
+
+        except Exception as err:
+            raise Exception(f">> Unexpected error @open_add_elem_window: {err}")
 
     def add_input(self):
-        if (gen_widgets.newWindow.validate_date(self.error_label, self.date_entry.get()) and
-                gen_widgets.newWindow.validate_number(self.error_label, self.number_entry.get())):
-            self.error_label.configure(text="")
-            print(">> add_input ...")
-            selected_db_name = self.master.sharedStates.selectedDataBase
-            self.master.dataBase.add_data_to_existing_db(selected_db_name,
-                                                         self.date_entry.get(),
-                                                         self.number_entry.get())
+        try:
+            if (gen_widgets.newWindow.validate_date(self.error_label, self.date_entry.get()) and
+                    gen_widgets.newWindow.validate_number(self.error_label, float(self.number_entry.get()))):
+                self.error_label.configure(text="")
+                selected_db_name = self.master.sharedStates.selectedDataBase
+                self.energy_value = float(self.number_entry.get())
+                self.date_value = self.date_entry.get()
 
-            self.add_button.configure(state="disabled")
-            self.master.enable_buttons()
-            self.add_db_elem.window.destroy()
+                self.master.dataBase.add_data_to_existing_db(selected_db_name,
+                                                             self.date_value,
+                                                             self.energy_value)
 
-        else:
-            self.error_label.configure(text="Ungültige Eingabe!")
+                self.add_button.configure(state="disabled")
+                self.master.enable_buttons()
+                self.add_db_elem.window.destroy()
+
+            else:
+                self.error_label.configure(text="Ungültige Eingabe!")
+
+        except Exception as err:
+            raise Exception(f">> Unexpected error @add_input: {err}")
 
     def open_delete_elem_window(self):
         print(">> Delete elements window ...")

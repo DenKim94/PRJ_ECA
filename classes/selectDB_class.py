@@ -61,11 +61,11 @@ class selectDB_frame(ctk.CTkFrame):
 
             if self.sharedStates.new_db_file_created:
                 self.updateDropDownValues()
-                print(f">> New DB file created: {self.sharedStates.new_db_file_created}")
+                print(f">> New database file created: {self.sharedStates.new_db_file_created}")
                 self.sharedStates.new_db_file_created = False
 
         except Exception as err:
-            print(f">> Unexpected error @selectDB_frame: {err}")
+            raise Exception(f">> Unexpected error @selectDB_frame: {err}")
 
     def updateRunButtonState(self, *args, disable_run_button=False):
         try:
@@ -84,7 +84,7 @@ class selectDB_frame(ctk.CTkFrame):
                     self.update_edit_button_state_callback(False)
 
         except Exception as err:
-            print(f">> Unexpected error @updateRunButtonState: {err}")
+            raise Exception(f">> Unexpected error @updateRunButtonState: {err}")
 
     def updateNewDBFileState(self, state):
         self.sharedStates.new_db_file_created = state
@@ -95,7 +95,7 @@ class selectDB_frame(ctk.CTkFrame):
                 self.sharedStates.existing_db_files.append(newValue)
 
         except Exception as err:
-            print(f"Unexpected error @addDropDownValue(): {err}")
+            raise Exception(f"Unexpected error @addDropDownValue(): {err}")
 
     def updateDropDownValues(self):
         try:
@@ -105,7 +105,7 @@ class selectDB_frame(ctk.CTkFrame):
 
             self.dropdown_db.configure(values=self.sharedStates.existing_db_files)
         except Exception as err:
-            print(f"Unexpected error @updateDropDownValues(): {err}")
+            raise Exception(f"Unexpected error @updateDropDownValues(): {err}")
 
     def removeDropDownValue(self, valueToRemove):
         try:
@@ -117,7 +117,7 @@ class selectDB_frame(ctk.CTkFrame):
                 self.dropdown_db.configure(values=self.sharedStates.existing_db_files)
 
         except Exception as err:
-            print(f"Unexpected error @removeDropDownValue(): {err}")
+            raise Exception(f"Unexpected error @removeDropDownValue(): {err}")
 
     def replaceDropDownValue(self, oldValue, newValue):
         try:
@@ -132,7 +132,7 @@ class selectDB_frame(ctk.CTkFrame):
                 print(f"Value @replaceDropDownValue(): {oldValue} not found!")
 
         except Exception as err:
-            print(f"Unexpected error @replaceDropDownValue(): {err}")
+            raise Exception(f"Unexpected error @replaceDropDownValue(): {err}")
 
     def handleDropDownState(self, state):
         try:
@@ -141,7 +141,7 @@ class selectDB_frame(ctk.CTkFrame):
             else:  # If buttons are enabled
                 self.dropdown_db.configure(state="normal")
         except Exception as err:
-            print(f"Unexpected error @handleDropDownState(): {err}")
+            raise Exception(f"Unexpected error @handleDropDownState(): {err}")
 
     def runAnalysis(self):
         print(f">> Run Analysis for: {self.dropDownValue.get()}")

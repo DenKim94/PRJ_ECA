@@ -85,7 +85,7 @@ class newDatabaseWindow:
             self.number_entry.after(100, self.check_input_fields)
 
         except Exception as err:
-            print(f">> Unexpected error @newDatabaseWindow: {err}")
+            raise Exception(f">> Unexpected error @newDatabaseWindow: {err}")
 
     def check_input_fields(self):
         if (self.db_name_entry.get() != "" and
@@ -98,20 +98,25 @@ class newDatabaseWindow:
             return False
 
     def confirm_input(self):
-        validInputs = self.check_input_fields()
-        if validInputs:
-            self.error_label.configure(text="")
-            self.master.dataBase.create_database(self.db_name_entry.get(),
-                                                 self.number_entry.get(),
-                                                 self.date_entry.get())
+        try:
+            validInputs = self.check_input_fields()
+            if validInputs:
+                self.error_label.configure(text="")
+                self.master.dataBase.create_database(self.db_name_entry.get(),
+                                                     self.number_entry.get(),
+                                                     self.date_entry.get())
 
-            self.master.sharedStates.new_db_file_created = True
+                self.master.sharedStates.new_db_file_created = True
 
-            if self.master.new_db_created_callback:
-                self.master.new_db_created_callback()
+                if self.master.new_db_created_callback:
+                    self.master.new_db_created_callback()
 
-            self.confirm_button.configure(state="disabled")
+                self.confirm_button.configure(state="disabled")
+                self.master.enable_buttons()
+                self.new_db.window.destroy()
+            else:
+                self.master.sharedStates.new_db_file_created = False
+                self.error_label.configure(text="Ungültige Eingabe!")
 
-        else:
-            self.master.sharedStates.new_db_file_created = False
-
+        except Exception as err:
+            raise Exception(f">> Unexpected error @confirm_input: {err}")

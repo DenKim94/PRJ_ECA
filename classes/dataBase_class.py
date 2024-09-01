@@ -1,6 +1,7 @@
 import sqlite3
 import UI_constants
 import os
+import datetime
 
 
 class dataBase:
@@ -9,6 +10,7 @@ class dataBase:
         self.cursor = None
         self.db_name = None
         self.db_path = None
+        self.data_isValid = None
         self.table_name = UI_constants.DEF_TABLE_NAME
         self.subfolder_path = os.path.join(os.getcwd(), UI_constants.DEF_DB_ROOT)
         self.initial_values = []    # [init_id, init_dateString, init_value]
@@ -106,22 +108,23 @@ class dataBase:
 
     def add_data_to_existing_db(self, db_name, new_date, new_energy_value):
         try:
-            print(f"Selected database name: {db_name}")
-            print(f"new_date: {new_date}")
-            print(f"new_energy_value: {new_energy_value}")
-
             # Open the existing database
             self.open_database(db_name)
+            self.data_isValid = self._validate_input_data(new_date, new_energy_value)
 
-            # Update the values in the table
-            self.cursor.execute(f"""
-                INSERT INTO {self.table_name} (date, energy_value)
-                VALUES (?, ?)
-            """, (new_date, new_energy_value))
-            self.connector.commit()
+            if self.data_isValid:
+                self.cursor.execute(f"""
+                    INSERT INTO {self.table_name} (date, energy_value)
+                    VALUES (?, ?)
+                """, (new_date, new_energy_value))
+                self.connector.commit()
+                print(f">> Added new entry to database: {db_name}")
+            else:
+                raise Exception(f"Invalid input data @add_data_to_existing_db(): {new_date}, {new_energy_value}")
 
         except sqlite3.OperationalError as err:
-            raise Exception(f"Unexpected error @open_and_adjust_existing_db(): {err}")
+            raise Exception(f"Error @add_data_to_existing_db(): {err}")
+
         finally:
             self.connector.close()
 
@@ -151,3 +154,51 @@ class dataBase:
 
         except sqlite3.OperationalError as err:
             raise Exception(f"Unexpected error @get_last_elem_id(): {err}")
+
+    def delete_last_entry_from_db(self, db_name):
+        try:
+            # Open the existing database
+            self.open_database(db_name)
+
+            # Delete the last entry
+            self.cursor.execute(f"""
+                  DELETE FROM {self.table_name} WHERE elem_id = ?
+              """, (self.get_last_elem_id()))
+            self.connector.commit()
+
+            print(f">> Removed last entry from database: {db_name}")
+
+        except sqlite3.OperationalError as err:
+            raise Exception(f"Unexpected error @remove_last_entry_from_db(): {err}")
+        finally:
+            self.connector.close()
+
+    def get_last_db_values_by_id(self, elem_id):
+        try:
+            self.cursor.execute(f"""
+                SELECT date, energy_value FROM {self.table_name}
+                WHERE elem_id = ?
+                ORDER BY date DESC
+                LIMIT 1
+            """, (elem_id,))
+            result = self.cursor.fetchone()  # [date_value, energy_value]
+            date_value = datetime.datetime.strptime(result[0], "%d.%m.%Y")
+            energy_value = float(result[1])
+
+            return [date_value, energy_value]
+
+        except sqlite3.OperationalError as err:
+            raise Exception(f"Unexpected error @get_last_db_values_by_id(): {err}")
+
+    def _validate_input_data(self, date_value, energy_value: float):
+        try:
+            [last_date_value, last_energy_value] = self.get_last_db_values_by_id(self.get_last_elem_id())
+            date_diff = datetime.datetime.strptime(date_value, "%d.%m.%Y") - last_date_value
+
+            if energy_value <= last_energy_value or date_diff.days <= 0:
+                return False
+            else:
+                return True
+
+        except Exception as err:
+            raise Exception(f"Unexpected error @_validate_input_data(): {err}")

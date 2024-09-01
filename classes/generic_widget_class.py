@@ -27,7 +27,7 @@ class newWindow:
             self.container.pack(side='top', padx=10, pady=10, expand=True)
 
         except Exception as err:
-            print(f">> Unexpected error @newWindow: {err}")
+            raise Exception(f">> Unexpected error @newWindow: {err}")
 
     @staticmethod
     def center_window(windowObj, windowWidth, windowHeight):
@@ -38,7 +38,7 @@ class newWindow:
             windowObj.geometry(f"{windowWidth}x{windowHeight}+{offset_x}+{offset_y}")
 
         except Exception as err:
-            print(f"Unexpected error @centerUI(): {err}")
+            raise Exception(f"Unexpected error @centerUI(): {err}")
 
     @staticmethod
     def getScreenSize(windowObj):
@@ -49,7 +49,7 @@ class newWindow:
             return [screenWidth, screenHeight]
 
         except Exception as err:
-            print(f"Unexpected error @getScreenSize(): {err}")
+            raise Exception(f"Unexpected error @getScreenSize(): {err}")
 
     @staticmethod
     def validate_date(err_widget, value):
