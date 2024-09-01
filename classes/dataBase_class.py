@@ -16,6 +16,7 @@ class dataBase:
         self.initial_values = []    # [init_id, init_dateString, init_value]
         self.initial_elem_id = UI_constants.DEF_INIT_ELEM_ID
         self.existing_db_files = self.get_existing_db_files()
+        self.remove_dropDownValue_callback = None
 
         print(f">> Existing database files: {self.existing_db_files}")
 
@@ -159,11 +160,12 @@ class dataBase:
         try:
             # Open the existing database
             self.open_database(db_name)
+            last_elem_id = self.get_last_elem_id()
 
             # Delete the last entry
             self.cursor.execute(f"""
                   DELETE FROM {self.table_name} WHERE elem_id = ?
-              """, (self.get_last_elem_id()))
+              """, (last_elem_id,))
             self.connector.commit()
 
             print(f">> Removed last entry from database: {db_name}")
@@ -202,3 +204,19 @@ class dataBase:
 
         except Exception as err:
             raise Exception(f"Unexpected error @_validate_input_data(): {err}")
+
+    def delete_selected_database(self, db_name):
+        try:
+            if self._check_for_existing_db():
+                os.remove(os.path.join(self.subfolder_path, db_name))
+                print(f">> Removed database file: {db_name}")
+                self.existing_db_files = self.get_existing_db_files()
+
+                if self.remove_dropDownValue_callback is not None:
+                    self.remove_dropDownValue_callback(db_name)
+
+            else:
+                raise Exception(f"Selected database {db_name} does not exist.")
+
+        except Exception as err:
+            raise Exception(f"Error @delete_selected_database(): {err}")

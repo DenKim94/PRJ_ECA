@@ -10,6 +10,7 @@ class sharedAppStates:
     def __init__(self):
         self.analysisIsRunning = False
         self.new_db_file_created = False
+        self.db_file_removed = False
         self.request_delete_db_elem = False
         self.request_add_db_elem = False
         self.selectedDataBase = None
@@ -44,6 +45,7 @@ class App(ctk.CTk):     # analogy: root = ctk.CTk()
             # DEFINE WIDGETS
             self.mainFrame = main_frame(self, self.sharedAppStates, UI_constants)
             self.selectDB = selectDB_frame(self.mainFrame, self.dataBase, UI_constants)
+            self.dataBase.remove_dropDownValue_callback = self.selectDB.removeDropDownValue
             self.buttonsFrame = buttons_frame(self.mainFrame, self.dataBase, UI_constants)
             self.buttonsFrame.disable_buttons_callback = self.selectDB.handleDropDownState
             self.buttonsFrame.new_db_created_callback = self.selectDB.updateDropDownValues

@@ -14,6 +14,8 @@ class editDatabaseWindow:
         self.CURSOR_TYPE = UI_constants.CURSOR_TYPE
         self.min_size_add_window = UI_constants.MIN_WINDOW_SIZE
         self.max_size_add_window = UI_constants.MAX_WINDOW_SIZE
+        self.max_size_delete_window = UI_constants.MAX_WINDOW_SIZE
+        self.max_size_delete_window = UI_constants.MAX_WINDOW_SIZE
         self.energy_value = None
         self.date_value = None
 
@@ -23,6 +25,9 @@ class editDatabaseWindow:
         self.date_entry = None
         self.error_label = None
         self.add_button = None
+        self.delete_db = None
+        self.remove_elem_button = None
+        self.delete_db_button = None
 
         try:
             self.master = parent
@@ -140,4 +145,59 @@ class editDatabaseWindow:
 
     def open_delete_elem_window(self):
         print(">> Delete elements window ...")
+        try:
+            self.edit_db.window.destroy()
+            self.delete_db = gen_widgets.newWindow(self.master.master, self.master.min_size_edit_window,
+                                                   self.master.max_size_edit_window)
+            self.delete_db.window.title("Daten entfernen")
+            # self.master.disable_buttons()
+            gen_widgets.newWindow.center_window(self.delete_db.window, self.master.max_size_edit_window[0],
+                                                self.master.max_size_edit_window[1])
 
+            frame = ctk.CTkFrame(master=self.delete_db.container, fg_color="transparent")
+            frame.pack(side='top', padx=5, pady=5)
+            edit_label = ctk.CTkLabel(master=frame, font=(self.DEF_FONT, self.FONT_SIZE_BUTTON),
+                                      text="Bitte auswählen:",
+                                      width=self.ENTRY_WIDTH)
+
+            edit_label.pack(side='top', padx=5, pady=5)
+            self.remove_elem_button = ctk.CTkButton(master=self.delete_db.container, text="Letzten Eintrag löschen",
+                                                    state="normal",
+                                                    cursor=self.CURSOR_TYPE,
+                                                    font=(self.DEF_FONT, self.FONT_SIZE_BUTTON),
+                                                    width=self.BUTTON_WIDTH,
+                                                    command=self.delete_last_entry_from_db)
+
+            self.remove_elem_button.pack(side='top', padx=5, pady=5)
+            self.delete_db_button = ctk.CTkButton(master=self.delete_db.container, text="Datenbank löschen",
+                                                  state="normal",
+                                                  cursor=self.CURSOR_TYPE,
+                                                  font=(self.DEF_FONT, self.FONT_SIZE_BUTTON),
+                                                  width=self.BUTTON_WIDTH,
+                                                  fg_color="#FF0000",
+                                                  hover_color="#8B0A0A",
+                                                  command=self.delete_selected_db)
+
+            self.delete_db_button.pack(side='top', padx=5, pady=5)
+            self.delete_db.window.protocol("WM_DELETE_WINDOW", self.master.enable_buttons)
+
+        except Exception as err:
+            raise Exception(f">> Unexpected error @open_delete_elem_window: {err}")
+
+    def delete_last_entry_from_db(self):
+        try:
+            self.master.dataBase.delete_last_entry_from_db(self.master.sharedStates.selectedDataBase)
+            self.master.enable_buttons()
+            self.delete_db.window.destroy()
+
+        except Exception as err:
+            raise Exception(f">> Unexpected error @delete_last_entry_from_db: {err}")
+
+    def delete_selected_db(self):
+        try:
+            self.master.dataBase.delete_selected_database(self.master.sharedStates.selectedDataBase)
+            self.master.enable_buttons()
+            self.delete_db.window.destroy()
+
+        except Exception as err:
+            raise Exception(f">> Unexpected error @delete_selected_db: {err}")
