@@ -35,6 +35,8 @@ class newDatabaseWindow:
                                               placeholder_text=self.PLACEHOLDER_DB_NAME)
             self.db_name_entry.pack(padx=5, pady=5, expand=True)
 
+            self.error_label = ctk.CTkLabel(master=self.new_db.container, text="", text_color="red")
+
             # Create the second and third input fields (date and number)
             frame = ctk.CTkFrame(master=self.new_db.container, fg_color="transparent")
             frame.pack(side='top', padx=5, pady=5)
@@ -45,8 +47,10 @@ class newDatabaseWindow:
                                              width=self.ENTRY_WIDTH,
                                              justify="center")
             self.number_entry.pack(side='top', padx=5, pady=5, expand=True)
-            self.number_entry.configure(validate="key",
-                                        validatecommand=(self.new_db.window.register(self.validate_number), '%P'))
+            self.number_entry.configure(validate="focusout",
+                                        validatecommand=(self.new_db.window.register(
+                                                         lambda value: gen_widgets.newWindow.validate_number(
+                                                             self.error_label, self.number_entry.get())), '%P'))
 
             date_label = ctk.CTkLabel(master=frame, font=(self.DEF_FONT, self.FONT_SIZE_BUTTON),
                                       text="Datum:", width=self.ENTRY_WIDTH)
@@ -55,7 +59,10 @@ class newDatabaseWindow:
                                            width=self.ENTRY_WIDTH,
                                            justify="center")
             self.date_entry.configure(validate="focusout",
-                                      validatecommand=(self.new_db.window.register(self.validate_date), '%P'))
+                                      validatecommand=(self.new_db.window.register(
+                                          lambda value: gen_widgets.newWindow.validate_date(
+                                              self.error_label, self.date_entry.get())), '%P'))
+
             self.date_entry.pack(side='top', padx=5, pady=5, expand=True)
             self.date_entry.insert(0, datetime.datetime.now().strftime("%d.%m.%Y"))
 
@@ -69,7 +76,6 @@ class newDatabaseWindow:
 
             self.confirm_button.pack(side='bottom', padx=5, pady=10)
 
-            self.error_label = ctk.CTkLabel(master=self.new_db.container, text="", text_color="red")
             self.error_label.pack(side='bottom', padx=5, pady=0)
 
             self.new_db.window.protocol("WM_DELETE_WINDOW", self.master.enable_buttons)
@@ -84,20 +90,11 @@ class newDatabaseWindow:
     def check_input_fields(self):
         if (self.db_name_entry.get() != "" and
                 self.db_name_entry.get() != self.PLACEHOLDER_DB_NAME and
-                self.validate_date(self.date_entry.get()) and
-                self.validate_number(self.number_entry.get())):
+                gen_widgets.newWindow.validate_date(self.error_label, self.date_entry.get()) and
+                gen_widgets.newWindow.validate_number(self.error_label, self.number_entry.get())):
             self.error_label.configure(text="")
             return True
         else:
-            return False
-
-    def validate_date(self, value):
-        try:
-            datetime.datetime.strptime(value, "%d.%m.%Y")
-            self.error_label.configure(text="")
-            return True
-        except ValueError:
-            self.error_label.configure(text="Ungültiges Datum!")
             return False
 
     def confirm_input(self):
@@ -117,16 +114,4 @@ class newDatabaseWindow:
 
         else:
             self.master.sharedStates.new_db_file_created = False
-            self.error_label.configure(text="Ungültige Eingaben!")
-
-    def validate_number(self, value):
-        if value == "":
-            return True
-        try:
-            float(value)
-            self.error_label.configure(text="")
-            return True
-        except ValueError:
-            self.error_label.configure(text="Ungültige Eingabe!")
-            return False
 

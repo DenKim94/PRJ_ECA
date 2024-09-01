@@ -1,5 +1,6 @@
 import customtkinter as ctk
 import UI_constants
+import datetime
 
 
 class newWindow:
@@ -49,3 +50,26 @@ class newWindow:
 
         except Exception as err:
             print(f"Unexpected error @getScreenSize(): {err}")
+
+    @staticmethod
+    def validate_date(err_widget, value):
+        try:
+            datetime.datetime.strptime(value, "%d.%m.%Y")
+            err_widget.configure(text="")
+            return True
+        except ValueError:
+            err_widget.configure(text="Ungültiges Datum!")
+            return False
+
+    @staticmethod
+    def validate_number(err_widget, value):
+        if value == "":
+            err_widget.configure(text="Eingabe erforderlich!")
+            return False
+        try:
+            float(value)
+            err_widget.configure(text="")
+            return True
+        except ValueError:
+            err_widget.configure(text="Ungültige Eingabe!")
+            return False
