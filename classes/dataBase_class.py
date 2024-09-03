@@ -121,7 +121,9 @@ class dataBase:
                 self.connector.commit()
                 print(f">> Added new entry to database: {db_name}")
             else:
-                raise Exception(f"Invalid input data @add_data_to_existing_db(): {new_date}, {new_energy_value}")
+                print(f"Invalid input data @add_data_to_existing_db(): {new_date}, {new_energy_value}")
+
+            return self.data_isValid
 
         except sqlite3.OperationalError as err:
             raise Exception(f"Error @add_data_to_existing_db(): {err}")
@@ -169,6 +171,8 @@ class dataBase:
             self.connector.commit()
 
             print(f">> Removed last entry from database: {db_name}")
+
+            return last_elem_id
 
         except sqlite3.OperationalError as err:
             raise Exception(f"Unexpected error @remove_last_entry_from_db(): {err}")

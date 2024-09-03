@@ -14,6 +14,16 @@ DEF_MAIN_FRAME_PADDING = [50, 10]   # [pad_x, pad_y] in pixel
 DEF_ICON_ROOT = "icons"
 DEF_ICON_NAME = "ECA_icon.png"
 
+# CALCULATIONS
+DEF_PRICE_EUR_kWh = 0.25                # Price in EUR/kWh
+DEF_ANNUAL_BASIC_PRICE_EUR = 94         # Price in EUR/Year
+DEF_TAX_PERCENTAGE = 19                 # Value in %
+DEF_ABS_ELECTRICITY_TAX_EUR = 0.02      # Price in EUR/kWh
+
+# CONFIGURATIONS
+CONFIGS_ENTRY_WIDTH = 120
+CONFIGS_LABEL_WIDTH = 200
+
 # ICON
 ICON_WIDTH = 65
 ICON_HEIGHT = 65
@@ -46,5 +56,7 @@ DEF_INIT_ELEM_ID = 1
 # EDIT DATABASE WINDOW
 MIN_WINDOW_SIZE = [420, 250]  # [width, height] in pixel
 MAX_WINDOW_SIZE = [420, 250]  # [width, height] in pixel
+
+
 
 

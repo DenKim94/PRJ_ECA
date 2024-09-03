@@ -70,7 +70,6 @@ class editDatabaseWindow:
             self.add_db_elem = gen_widgets.newWindow(self.master.master, self.min_size_add_window,
                                                      self.max_size_add_window)
             self.add_db_elem.window.title("Daten hinzufügen")
-            # self.master.disable_buttons()
             gen_widgets.newWindow.center_window(self.add_db_elem.window, self.master.max_size_edit_window[0],
                                                 self.master.max_size_edit_window[1])
 
@@ -122,20 +121,20 @@ class editDatabaseWindow:
 
     def add_input(self):
         try:
+            self.error_label.configure(text="")
             if (gen_widgets.newWindow.validate_date(self.error_label, self.date_entry.get()) and
                     gen_widgets.newWindow.validate_number(self.error_label, float(self.number_entry.get()))):
-                self.error_label.configure(text="")
                 selected_db_name = self.master.sharedStates.selectedDataBase
                 self.energy_value = float(self.number_entry.get())
                 self.date_value = self.date_entry.get()
 
-                self.master.dataBase.add_data_to_existing_db(selected_db_name,
-                                                             self.date_value,
-                                                             self.energy_value)
-
-                self.add_button.configure(state="disabled")
-                self.master.enable_buttons()
-                self.add_db_elem.window.destroy()
+                data_isValid = self.master.dataBase.add_data_to_existing_db(selected_db_name,
+                                                                            self.date_value,
+                                                                            self.energy_value)
+                if not data_isValid:
+                    self.error_label.configure(text="Ungültiger Wert!", text_color="red")
+                else:
+                    self.error_label.configure(text="Eintrag wurde hinzugefügt.", text_color="green")
 
             else:
                 self.error_label.configure(text="Ungültige Eingabe!")
@@ -150,7 +149,6 @@ class editDatabaseWindow:
             self.delete_db = gen_widgets.newWindow(self.master.master, self.master.min_size_edit_window,
                                                    self.master.max_size_edit_window)
             self.delete_db.window.title("Daten entfernen")
-            # self.master.disable_buttons()
             gen_widgets.newWindow.center_window(self.delete_db.window, self.master.max_size_edit_window[0],
                                                 self.master.max_size_edit_window[1])
 
@@ -159,6 +157,8 @@ class editDatabaseWindow:
             edit_label = ctk.CTkLabel(master=frame, font=(self.DEF_FONT, self.FONT_SIZE_BUTTON),
                                       text="Bitte auswählen:",
                                       width=self.ENTRY_WIDTH)
+
+            self.error_label = ctk.CTkLabel(master=self.delete_db.container, text="", text_color="red")
 
             edit_label.pack(side='top', padx=5, pady=5)
             self.remove_elem_button = ctk.CTkButton(master=self.delete_db.container, text="Letzten Eintrag löschen",
@@ -181,16 +181,22 @@ class editDatabaseWindow:
             self.delete_db_button.pack(side='top', padx=5, pady=5)
             self.delete_db.window.protocol("WM_DELETE_WINDOW", self.master.enable_buttons)
 
+            self.error_label.pack(side='top', padx=5, pady=0)
+
         except Exception as err:
             raise Exception(f">> Unexpected error @open_delete_elem_window: {err}")
 
     def delete_last_entry_from_db(self):
         try:
-            self.master.dataBase.delete_last_entry_from_db(self.master.sharedStates.selectedDataBase)
-            self.master.enable_buttons()
-            self.delete_db.window.destroy()
+            last_elem_id = self.master.dataBase.delete_last_entry_from_db(self.master.sharedStates.selectedDataBase)
+            print(last_elem_id)
+            if last_elem_id is not None:
+                self.error_label.configure(text="Letzter Eintrag wurde gelöscht.", text_color="green")
+            else:
+                self.error_label.configure(text="Kein Eintrag wurde gefunden.", text_color="red")
 
         except Exception as err:
+
             raise Exception(f">> Unexpected error @delete_last_entry_from_db: {err}")
 
     def delete_selected_db(self):

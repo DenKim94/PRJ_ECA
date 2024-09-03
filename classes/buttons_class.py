@@ -1,6 +1,7 @@
 import customtkinter as ctk
 import classes.createDB_class as createDB
 import classes.editDB_class as editDB
+import classes.configure_class as configDB
 
 
 class buttons_frame(ctk.CTkFrame):
@@ -116,4 +117,4 @@ class buttons_frame(ctk.CTkFrame):
         self.edit_db = editDB.editDatabaseWindow(self)
 
     def open_new_set_conf_window(self):
-        print(">> Configure ...")
+        self.config_db = configDB.configWindow(self, self.dataBase)
