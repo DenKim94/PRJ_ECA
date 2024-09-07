@@ -67,7 +67,10 @@ class newWindow:
             err_widget.configure(text="Eingabe erforderlich!")
             return False
         try:
-            float(value)
+            num = float(value)
+            if not (isinstance(num, float) and num != 0.0):
+                err_widget.configure(text="Ungültige Eingabe!")
+                return False
             err_widget.configure(text="")
             return True
         except ValueError:

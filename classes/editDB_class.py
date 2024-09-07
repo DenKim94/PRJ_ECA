@@ -123,7 +123,7 @@ class editDatabaseWindow:
         try:
             self.error_label.configure(text="")
             if (gen_widgets.newWindow.validate_date(self.error_label, self.date_entry.get()) and
-                    gen_widgets.newWindow.validate_number(self.error_label, float(self.number_entry.get()))):
+                    gen_widgets.newWindow.validate_number(self.error_label, self.number_entry.get())):
                 selected_db_name = self.master.sharedStates.selectedDataBase
                 self.energy_value = float(self.number_entry.get())
                 self.date_value = self.date_entry.get()

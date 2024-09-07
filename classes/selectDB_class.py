@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from PIL import Image
 import os
+import classes.calculation_class as calc_class
 
 
 class selectDB_frame(ctk.CTkFrame):
@@ -73,6 +74,7 @@ class selectDB_frame(ctk.CTkFrame):
             if self.sharedStates.selectedDataBase != self.PLACEHOLDER:
                 if not disable_run_button:
                     self.button_run.configure(state="normal")
+                    self.dataBase.db_name = self.sharedStates.selectedDataBase
                 else:
                     self.button_run.configure(state="disabled")
 
@@ -145,5 +147,6 @@ class selectDB_frame(ctk.CTkFrame):
 
     def runAnalysis(self):
         print(f">> Run Analysis for: {self.dropDownValue.get()}")
+        costs_analyzer = calc_class.cost_analyzer(self)
 
 

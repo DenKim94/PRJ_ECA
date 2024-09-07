@@ -16,9 +16,9 @@ class configWindow:
         self.max_size_config_window = UI_constants.MAX_WINDOW_SIZE
 
         # DEFAULT SETTINGS
-        self.PRICE_EUR_kWh = UI_constants.DEF_PRICE_EUR_kWh
+        self.ENERGY_PRICE_EUR_kWh = UI_constants.DEF_ENERGY_PRICE_EUR_kWh
         self.ANNUAL_BASIC_PRICE_EUR = UI_constants.DEF_ANNUAL_BASIC_PRICE_EUR
-        self.TAX_PERCENTAGE = UI_constants.DEF_TAX_PERCENTAGE
+        self.MONTHLY_COSTS_EUR = UI_constants.DEF_MONTHLY_COSTS_EUR
         self.ABS_ELEC_TAX_EUR_kWh = UI_constants.DEF_ABS_ELECTRICITY_TAX_EUR
 
         try:
@@ -50,7 +50,7 @@ class configWindow:
                                             lambda value: gen_widgets.newWindow.validate_number(
                                                 self.error_label, self.price_entry.get())), '%P'))
 
-            self.price_entry.insert(0, str(self.PRICE_EUR_kWh))
+            self.price_entry.insert(0, str(self.ENERGY_PRICE_EUR_kWh))
 
             frame = ctk.CTkFrame(master=self.configWindow.container, fg_color="transparent")
             frame.pack(side='top', padx=5, pady=5)
@@ -70,25 +70,6 @@ class configWindow:
                                                     self.error_label, self.basic_price_entry.get())), '%P'))
 
             self.basic_price_entry.insert(0, str(self.ANNUAL_BASIC_PRICE_EUR))
-
-            frame = ctk.CTkFrame(master=self.configWindow.container, fg_color="transparent")
-            frame.pack(side='top', padx=5, pady=5)
-            tax_percent_label = ctk.CTkLabel(master=frame, font=(self.DEF_FONT, self.FONT_SIZE_BUTTON),
-                                             text="Umsatzsteuer in %:",
-                                             anchor=ctk.W,
-                                             width=self.LABEL_WIDTH)
-            tax_percent_label.pack(side='left', padx=5, pady=1)
-
-            self.tax_percent_entry = ctk.CTkEntry(master=frame,
-                                                  width=self.ENTRY_WIDTH,
-                                                  justify="center")
-            self.tax_percent_entry.pack(side='left', padx=1, pady=1, expand=False)
-            self.tax_percent_entry.configure(validate="focusout",
-                                             validatecommand=(self.configWindow.window.register(
-                                                lambda value: gen_widgets.newWindow.validate_number(
-                                                    self.error_label, self.tax_percent_entry.get())), '%P'))
-
-            self.tax_percent_entry.insert(0, str(self.TAX_PERCENTAGE))
 
             frame = ctk.CTkFrame(master=self.configWindow.container, fg_color="transparent")
             frame.pack(side='top', padx=5, pady=5)
@@ -112,6 +93,25 @@ class configWindow:
             self.elec_tax_percent_entry.insert(0, str(self.ABS_ELEC_TAX_EUR_kWh))
 
             frame = ctk.CTkFrame(master=self.configWindow.container, fg_color="transparent")
+            frame.pack(side='top', padx=5, pady=5)
+            monthly_costs_label = ctk.CTkLabel(master=frame, font=(self.DEF_FONT, self.FONT_SIZE_BUTTON),
+                                               text="Monatlicher Abschlag in EUR:",
+                                               anchor=ctk.W,
+                                               width=self.LABEL_WIDTH)
+            monthly_costs_label.pack(side='left', padx=5, pady=1)
+
+            self.monthly_costs_entry = ctk.CTkEntry(master=frame,
+                                                  width=self.ENTRY_WIDTH,
+                                                  justify="center")
+            self.monthly_costs_entry.pack(side='left', padx=1, pady=1, expand=False)
+            self.monthly_costs_entry.configure(validate="focusout",
+                                               validatecommand=(self.configWindow.window.register(
+                                                    lambda value: gen_widgets.newWindow.validate_number(
+                                                        self.error_label, self.monthly_costs_entry.get())), '%P'))
+
+            self.monthly_costs_entry.insert(0, str(self.MONTHLY_COSTS_EUR))
+
+            frame = ctk.CTkFrame(master=self.configWindow.container, fg_color="transparent")
             frame.pack(side='bottom', padx=5, pady=5)
 
             self.ok_button = ctk.CTkButton(master=frame, text="OK",
@@ -131,12 +131,13 @@ class configWindow:
     def provide_configs(self):
         try:
             if self.validate_inputs():
-                self.PRICE_EUR_kWh = float(self.price_entry.get())
+                self.ENERGY_PRICE_EUR_kWh = float(self.price_entry.get())
                 self.ANNUAL_BASIC_PRICE_EUR = float(self.basic_price_entry.get())
-                self.TAX_PERCENTAGE = float(self.tax_percent_entry.get())
-                self.elec_tax_percent_entry = float(self.elec_tax_percent_entry.get())
-                print(f">> Configs: {self.PRICE_EUR_kWh}, {self.ANNUAL_BASIC_PRICE_EUR}, {self.TAX_PERCENTAGE}, "
-                      f"{self.elec_tax_percent_entry}")
+                self.MONTHLY_COSTS_EUR = float(self.monthly_costs_entry.get())
+                self.ABS_ELEC_TAX_EUR_kWh = float(self.elec_tax_percent_entry.get())
+                print(f">> New configs: {self.ENERGY_PRICE_EUR_kWh} €/kWh, {self.ANNUAL_BASIC_PRICE_EUR} €/Year, "
+                      f"{self.MONTHLY_COSTS_EUR} €/MONTH, "
+                      f"{self.ABS_ELEC_TAX_EUR_kWh} €/kWh")
                 self.error_label.configure(text="Werte sind übernommen.", text_color="green")
 
         except Exception as err:
@@ -145,7 +146,7 @@ class configWindow:
     def validate_inputs(self):
         if gen_widgets.newWindow.validate_number(self.error_label, self.price_entry.get()) and \
            gen_widgets.newWindow.validate_number(self.error_label, self.basic_price_entry.get()) and \
-           gen_widgets.newWindow.validate_number(self.error_label, self.tax_percent_entry.get()) and \
+           gen_widgets.newWindow.validate_number(self.error_label, self.monthly_costs_entry.get()) and \
            gen_widgets.newWindow.validate_number(self.error_label, self.elec_tax_percent_entry.get()):
             self.error_label.configure(text="")
             isValid = True

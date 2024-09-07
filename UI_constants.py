@@ -15,10 +15,11 @@ DEF_ICON_ROOT = "icons"
 DEF_ICON_NAME = "ECA_icon.png"
 
 # CALCULATIONS
-DEF_PRICE_EUR_kWh = 0.25                # Price in EUR/kWh
-DEF_ANNUAL_BASIC_PRICE_EUR = 94         # Price in EUR/Year
-DEF_TAX_PERCENTAGE = 19                 # Value in %
-DEF_ABS_ELECTRICITY_TAX_EUR = 0.02      # Price in EUR/kWh
+DEF_ENERGY_PRICE_EUR_kWh = 0.32             # Price in EUR/kWh
+DEF_ANNUAL_BASIC_PRICE_EUR = 120            # Price in EUR/Year
+DEF_ABS_ELECTRICITY_TAX_EUR = 0.02          # Price in EUR/kWh
+DEF_MONTHLY_COSTS_EUR = 50                  # Price in EUR/Month
+DEF_VA_TAX_PERCENTAGE = 19                  # Value added tax in % (0 < val < 100); To be adjusted here if needed
 
 # CONFIGURATIONS
 CONFIGS_ENTRY_WIDTH = 120

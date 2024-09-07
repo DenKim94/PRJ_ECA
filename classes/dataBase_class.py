@@ -18,6 +18,13 @@ class dataBase:
         self.existing_db_files = self.get_existing_db_files()
         self.remove_dropDownValue_callback = None
 
+        # DEFAULT SETTINGS
+        self.ENERGY_PRICE_EUR_kWh = UI_constants.DEF_ENERGY_PRICE_EUR_kWh
+        self.ANNUAL_BASIC_PRICE_EUR = UI_constants.DEF_ANNUAL_BASIC_PRICE_EUR
+        self.MONTHLY_COSTS_EUR = UI_constants.DEF_MONTHLY_COSTS_EUR
+        self.ABS_ELEC_TAX_EUR_kWh = UI_constants.DEF_ABS_ELECTRICITY_TAX_EUR
+        self.VA_TAX_REL = UI_constants.DEF_VA_TAX_PERCENTAGE/100
+
         print(f">> Existing database files: {self.existing_db_files}")
 
     def create_database(self, db_name, number_str, date_str):
@@ -71,17 +78,19 @@ class dataBase:
         except sqlite3.OperationalError as err:
             raise Exception(f"Unexpected error @insert_values_into_table(): {err}")
 
-    def get_values_by_id(self, elem_id):
+    def get_all_date_and_energy_values(self):
+        self.open_database(self.db_name)
         try:
             self.cursor.execute(f"""
                 SELECT date, energy_value FROM {self.table_name}
-                WHERE elem_id = ?
-            """, (elem_id,))
-            result = self.cursor.fetchone()  # [date, energy_value]
-            return result
+            """)
+            results = self.cursor.fetchall()  # [[date, energy_value], ...]
+            date_tuple, energy_tuple = zip(*results)
+
+            return date_tuple, energy_tuple
 
         except sqlite3.OperationalError as err:
-            raise Exception(f"Unexpected error @get_values_by_elem_id(): {err}")
+            raise Exception(f"Unexpected error @get_date_and_energy_values(): {err}")
 
     def get_db_name(self):
         return self.db_name
@@ -135,10 +144,9 @@ class dataBase:
         try:
             # Check if the database exists
             if not self._check_for_existing_db():
-                raise Exception(f"Database {db_name} does not exist")
+                raise Exception("No database file found")
 
-            self.db_name = f"{db_name}"
-            self.db_path = os.path.join(self.subfolder_path, self.db_name)
+            self.db_path = os.path.join(self.subfolder_path, db_name)
             self.connector = sqlite3.connect(self.db_path)
             self.cursor = self.connector.cursor()
 
