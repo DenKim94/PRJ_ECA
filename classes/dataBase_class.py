@@ -18,18 +18,19 @@ class dataBase:
         self.existing_db_files = self.get_existing_db_files()
         self.remove_dropDownValue_callback = None
 
-        # DEFAULT SETTINGS
         self.ENERGY_PRICE_EUR_kWh = UI_constants.DEF_ENERGY_PRICE_EUR_kWh
         self.ANNUAL_BASIC_PRICE_EUR = UI_constants.DEF_ANNUAL_BASIC_PRICE_EUR
         self.MONTHLY_COSTS_EUR = UI_constants.DEF_MONTHLY_COSTS_EUR
-        self.ABS_ELEC_TAX_EUR_kWh = UI_constants.DEF_ABS_ELECTRICITY_TAX_EUR
-        self.VA_TAX_REL = UI_constants.DEF_VA_TAX_PERCENTAGE/100
+        self.ADD_CREDIT_EUR = UI_constants.DEF_ADD_CREDIT_EUR
+        self.ABS_CURRENT_TAX_EUR_kWh = UI_constants.DEF_ABS_ELECTRICITY_TAX_EUR
+        self.VA_TAX_REL = UI_constants.DEF_VA_TAX_PERCENTAGE / 100
+        self.min_size_cost_analyzer = UI_constants.MIN_WINDOW_SIZE
+        self.max_size_cost_analyzer = UI_constants.MAX_WINDOW_SIZE
 
-        print(f">> Existing database files: {self.existing_db_files}")
+        print(f">> Vorliegende Datenbanken: {self.existing_db_files}")
 
     def create_database(self, db_name, number_str, date_str):
         try:
-            print(f">> @create_database: {db_name}, {number_str}, {date_str}")
             self.db_name = f"{db_name}{'.db'}"
             self.db_path = os.path.join(self.subfolder_path, self.db_name)
 
@@ -54,6 +55,8 @@ class dataBase:
                                           self.initial_values[1],
                                           self.initial_values[2])
 
+            print(f">> Neue Datenbank wurde erstellt: {self.db_name}")
+
         except sqlite3.OperationalError as err:
             raise Exception(f"Unexpected error @create_database(): {err}")
         finally:
@@ -63,7 +66,7 @@ class dataBase:
         try:
             if not os.path.exists(self.subfolder_path):
                 os.makedirs(self.subfolder_path)
-                print(f">> @create_db_directory: {self.subfolder_path}")
+
         except (FileNotFoundError, OSError) as err:
             raise Exception(f"Unexpected error @create_db_directory(): {err}")
 
@@ -128,7 +131,7 @@ class dataBase:
                     VALUES (?, ?)
                 """, (new_date, new_energy_value))
                 self.connector.commit()
-                print(f">> Added new entry to database: {db_name}")
+                print(f">> Neuer Eintrag hinzugefügt in: {db_name}")
             else:
                 print(f"Invalid input data @add_data_to_existing_db(): {new_date}, {new_energy_value}")
 
@@ -221,7 +224,7 @@ class dataBase:
         try:
             if self._check_for_existing_db():
                 os.remove(os.path.join(self.subfolder_path, db_name))
-                print(f">> Removed database file: {db_name}")
+                print(f">> Gelöschte Datenbank: {db_name}")
                 self.existing_db_files = self.get_existing_db_files()
 
                 if self.remove_dropDownValue_callback is not None:

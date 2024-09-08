@@ -143,7 +143,6 @@ class editDatabaseWindow:
             raise Exception(f">> Unexpected error @add_input: {err}")
 
     def open_delete_elem_window(self):
-        print(">> Delete elements window ...")
         try:
             self.edit_db.window.destroy()
             self.delete_db = gen_widgets.newWindow(self.master.master, self.master.min_size_edit_window,

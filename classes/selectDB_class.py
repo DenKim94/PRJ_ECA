@@ -18,6 +18,7 @@ class selectDB_frame(ctk.CTkFrame):
             self.dropDownValue = ctk.StringVar(value=UI_constants.PLACEHOLDER_TEXT)
             self.icon_path = os.path.join(UI_constants.DEF_ICON_ROOT, UI_constants.DEF_ICON_NAME)
             self.update_edit_button_state_callback = None
+            self.analysis_is_running = False
 
             # UPDATE DATABASE LIST
             if self.dataBase.existing_db_files is not None:
@@ -146,7 +147,10 @@ class selectDB_frame(ctk.CTkFrame):
             raise Exception(f"Unexpected error @handleDropDownState(): {err}")
 
     def runAnalysis(self):
-        print(f">> Run Analysis for: {self.dropDownValue.get()}")
+        print(f">> Analyse für: {self.dropDownValue.get()}")
+        self.analysis_is_running = True
+        self.button_run.configure(state="disabled")
         costs_analyzer = calc_class.cost_analyzer(self)
-
+        # CALCULATIONS
+        costs_analyzer.run_calculations()
 

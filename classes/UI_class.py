@@ -29,7 +29,7 @@ class App(ctk.CTk):     # analogy: root = ctk.CTk()
         None
         """
         super().__init__()
-        print("############## Initializing Energy Costs Analyzer ##############")
+        print("############## Energy Costs Analyzer ##############")
         try:
             self.sharedAppStates = sharedStates
             self.dataBase = dataBase()

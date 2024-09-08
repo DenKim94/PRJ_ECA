@@ -119,4 +119,5 @@ class newDatabaseWindow:
                 self.error_label.configure(text="Ungültige Eingabe!")
 
         except Exception as err:
+            self.error_label.configure(text="Datenbank konnte nicht erstellt werden!")
             raise Exception(f">> Unexpected error @confirm_input: {err}")

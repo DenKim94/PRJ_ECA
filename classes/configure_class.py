@@ -19,6 +19,7 @@ class configWindow:
         self.ENERGY_PRICE_EUR_kWh = UI_constants.DEF_ENERGY_PRICE_EUR_kWh
         self.ANNUAL_BASIC_PRICE_EUR = UI_constants.DEF_ANNUAL_BASIC_PRICE_EUR
         self.MONTHLY_COSTS_EUR = UI_constants.DEF_MONTHLY_COSTS_EUR
+        self.ADD_CREDIT_EUR = UI_constants.DEF_ADD_CREDIT_EUR
         self.ABS_ELEC_TAX_EUR_kWh = UI_constants.DEF_ABS_ELECTRICITY_TAX_EUR
 
         try:
@@ -73,27 +74,6 @@ class configWindow:
 
             frame = ctk.CTkFrame(master=self.configWindow.container, fg_color="transparent")
             frame.pack(side='top', padx=5, pady=5)
-
-            elec_tax_percent_label = ctk.CTkLabel(master=frame, font=(self.DEF_FONT, self.FONT_SIZE_BUTTON),
-                                                  text="Stromsteuer in EUR/kWh:",
-                                                  anchor=ctk.W,
-                                                  width=self.LABEL_WIDTH)
-            elec_tax_percent_label.pack(side='left', padx=5, pady=1)
-
-            self.elec_tax_percent_entry = ctk.CTkEntry(master=frame,
-                                                       width=self.ENTRY_WIDTH,
-                                                       justify="center")
-
-            self.elec_tax_percent_entry.pack(side='left', padx=1, pady=1, expand=False)
-            self.elec_tax_percent_entry.configure(validate="focusout",
-                                                  validatecommand=(self.configWindow.window.register(
-                                                    lambda value: gen_widgets.newWindow.validate_number(
-                                                        self.error_label, self.elec_tax_percent_entry.get())), '%P'))
-
-            self.elec_tax_percent_entry.insert(0, str(self.ABS_ELEC_TAX_EUR_kWh))
-
-            frame = ctk.CTkFrame(master=self.configWindow.container, fg_color="transparent")
-            frame.pack(side='top', padx=5, pady=5)
             monthly_costs_label = ctk.CTkLabel(master=frame, font=(self.DEF_FONT, self.FONT_SIZE_BUTTON),
                                                text="Monatlicher Abschlag in EUR:",
                                                anchor=ctk.W,
@@ -101,8 +81,9 @@ class configWindow:
             monthly_costs_label.pack(side='left', padx=5, pady=1)
 
             self.monthly_costs_entry = ctk.CTkEntry(master=frame,
-                                                  width=self.ENTRY_WIDTH,
-                                                  justify="center")
+                                                    width=self.ENTRY_WIDTH,
+                                                    justify="center")
+
             self.monthly_costs_entry.pack(side='left', padx=1, pady=1, expand=False)
             self.monthly_costs_entry.configure(validate="focusout",
                                                validatecommand=(self.configWindow.window.register(
@@ -112,6 +93,27 @@ class configWindow:
             self.monthly_costs_entry.insert(0, str(self.MONTHLY_COSTS_EUR))
 
             frame = ctk.CTkFrame(master=self.configWindow.container, fg_color="transparent")
+            frame.pack(side='top', padx=5, pady=5)
+
+            add_credit_label = ctk.CTkLabel(master=frame, font=(self.DEF_FONT, self.FONT_SIZE_BUTTON),
+                                            text="Guthaben (optional) in EUR:",
+                                            anchor=ctk.W,
+                                            width=self.LABEL_WIDTH)
+            add_credit_label.pack(side='left', padx=5, pady=1)
+
+            self.add_credit_entry = ctk.CTkEntry(master=frame,
+                                                 width=self.ENTRY_WIDTH,
+                                                 justify="center")
+
+            self.add_credit_entry.pack(side='left', padx=1, pady=1, expand=False)
+            self.add_credit_entry.configure(validate="focusout",
+                                            validatecommand=(self.configWindow.window.register(
+                                                    lambda value: gen_widgets.newWindow.validate_number(
+                                                        self.error_label, self.add_credit_entry.get())), '%P'))
+
+            self.add_credit_entry.insert(0, str(self.ADD_CREDIT_EUR))
+
+            frame = ctk.CTkFrame(master=self.configWindow.container, fg_color="transparent")
             frame.pack(side='bottom', padx=5, pady=5)
 
             self.ok_button = ctk.CTkButton(master=frame, text="OK",
@@ -119,7 +121,7 @@ class configWindow:
                                            cursor=self.CURSOR_TYPE,
                                            font=(self.DEF_FONT, self.FONT_SIZE_BUTTON),
                                            width=self.BUTTON_WIDTH,
-                                           command=self.provide_configs)
+                                           command=self.provide_configs_to_db)
 
             self.error_label.pack(side='top', padx=5, pady=0)
             self.ok_button.pack(side='bottom', padx=5, pady=0)
@@ -128,17 +130,20 @@ class configWindow:
         except Exception as err:
             raise Exception(f">> Unexpected error @configWindow: {err}")
 
-    def provide_configs(self):
+    def provide_configs_to_db(self):
         try:
             if self.validate_inputs():
                 self.ENERGY_PRICE_EUR_kWh = float(self.price_entry.get())
                 self.ANNUAL_BASIC_PRICE_EUR = float(self.basic_price_entry.get())
                 self.MONTHLY_COSTS_EUR = float(self.monthly_costs_entry.get())
-                self.ABS_ELEC_TAX_EUR_kWh = float(self.elec_tax_percent_entry.get())
-                print(f">> New configs: {self.ENERGY_PRICE_EUR_kWh} €/kWh, {self.ANNUAL_BASIC_PRICE_EUR} €/Year, "
-                      f"{self.MONTHLY_COSTS_EUR} €/MONTH, "
-                      f"{self.ABS_ELEC_TAX_EUR_kWh} €/kWh")
+                self.ADD_CREDIT_EUR = float(self.add_credit_entry.get())
+
                 self.error_label.configure(text="Werte sind übernommen.", text_color="green")
+                # PROVIDE CONFIGS TO DATABASE CLASS
+                self.dataBase.ENERGY_PRICE_EUR_kWh = self.ENERGY_PRICE_EUR_kWh
+                self.dataBase.ANNUAL_BASIC_PRICE_EUR = self.ANNUAL_BASIC_PRICE_EUR
+                self.dataBase.MONTHLY_COSTS_EUR = self.MONTHLY_COSTS_EUR
+                self.dataBase.ADD_CREDIT_EUR = self.ADD_CREDIT_EUR
 
         except Exception as err:
             raise Exception(f">> Unexpected error @provide_configs: {err}")
@@ -147,7 +152,7 @@ class configWindow:
         if gen_widgets.newWindow.validate_number(self.error_label, self.price_entry.get()) and \
            gen_widgets.newWindow.validate_number(self.error_label, self.basic_price_entry.get()) and \
            gen_widgets.newWindow.validate_number(self.error_label, self.monthly_costs_entry.get()) and \
-           gen_widgets.newWindow.validate_number(self.error_label, self.elec_tax_percent_entry.get()):
+           gen_widgets.newWindow.validate_number(self.error_label, self.add_credit_entry.get()):
             self.error_label.configure(text="")
             isValid = True
         else:
