@@ -16,14 +16,14 @@ DEF_ICON_NAME = "ECA_icon.png"
 
 # PARAMETERS FOR CALCULATIONS
 DEF_DAYS_YEAR = 365
-DEF_DAYS_MONTH = 30.44                      # Average days in a month
-DEF_ADD_CREDIT_EUR = 0                     # Additional credit in EUR
-DEF_ENERGY_PRICE_EUR_kWh = 0.3207           # Price in EUR/kWh
-DEF_ANNUAL_BASIC_PRICE_EUR = 120            # Price in EUR/Year
-DEF_ABS_ELECTRICITY_TAX_EUR = 0.0205        # Price in EUR/kWh; To be adjusted here if needed
-DEF_MONTHLY_COSTS_EUR = 44                  # Price in EUR/Month
-DEF_VA_TAX_PERCENTAGE = 19                  # Value added tax in % (0 < val < 100); To be adjusted here if needed
-DEF_TAX_X_PERCENTAGE = 3                    # Additional taxes (e.g. concession fee, levies)
+DEF_DAYS_MONTH = 30.44                          # Average days in a month
+DEF_ADD_CREDIT_EUR = 0                          # Additional credit in EUR
+DEF_ENERGY_PRICE_EUR_kWh = 0.3207               # Price in EUR/kWh
+DEF_ANNUAL_BASIC_PRICE_EUR = 112.8              # Price in EUR/Year
+DEF_ABS_ELECTRICITY_TAX_EUR = 0.0205            # Price in EUR/kWh; To be adjusted here if needed
+DEF_MONTHLY_COSTS_EUR = 44                      # Price in EUR/Month
+DEF_VA_TAX_PERCENTAGE = 19                      # Value added tax in % (0 < val < 100); To be adjusted here if needed
+DEF_TAX_X_PERCENTAGE = 3                        # Additional taxes (e.g. concession fee, levies)
 
 # CONFIGURATIONS
 CONFIGS_ENTRY_WIDTH = 120
@@ -62,6 +62,9 @@ DEF_INIT_ELEM_ID = 1
 MIN_WINDOW_SIZE = [420, 250]  # [width, height] in pixel
 MAX_WINDOW_SIZE = [420, 250]  # [width, height] in pixel
 
+# RESULTS VISUALIZER
+MIN_WINDOW_SIZE_RESULTS = [550, 350]  # [min_width, min_height] in pixel
+MAX_WINDOW_SIZE_RESULTS = [850, 500]  # [max_width, max_height] in pixel
 
 
 

@@ -58,21 +58,37 @@ class newWindow:
             err_widget.configure(text="")
             return True
         except ValueError:
-            err_widget.configure(text="Ungültiges Datum!")
+            err_widget.configure(text="Ungültiges Datum!", text_color="red")
             return False
 
     @staticmethod
     def validate_number(err_widget, value):
         if value == "":
-            err_widget.configure(text="Eingabe erforderlich!")
+            err_widget.configure(text="Eingabe erforderlich!", text_color="red")
             return False
         try:
             num = float(value)
-            if not (isinstance(num, float) and num != 0.0):
-                err_widget.configure(text="Ungültige Eingabe!")
+            if not (isinstance(num, float) and num != 0.0 and num > 0.0):
+                err_widget.configure(text="Ungültige Eingabe!", text_color="red")
                 return False
             err_widget.configure(text="")
             return True
         except ValueError:
-            err_widget.configure(text="Ungültige Eingabe!")
+            err_widget.configure(text="Ungültige Eingabe!", text_color="red")
+            return False
+
+    @staticmethod
+    def validate_optional_number(err_widget, value):
+        if value == "":
+            err_widget.configure(text="Eingabe erforderlich!", text_color="red")
+            return False
+        try:
+            num = float(value)
+            if not (isinstance(num, float) and num >= 0.0):
+                err_widget.configure(text="Ungültige Eingabe!", text_color="red")
+                return False
+            err_widget.configure(text="")
+            return True
+        except ValueError:
+            err_widget.configure(text="Ungültige Eingabe!", text_color="red")
             return False

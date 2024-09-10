@@ -1,8 +1,7 @@
 import UI_constants
-import classes.generic_widget_class as gen_widgets
 from datetime import datetime
 import math
-
+import classes.results_visualizer as rv
 
 class cost_analyzer:
     def __init__(self, parent):
@@ -22,8 +21,12 @@ class cost_analyzer:
             self.max_size_cost_analyzer = UI_constants.MAX_WINDOW_SIZE
 
             # CALCULATED PARAMETERS
+            self.energyDifference_list = []
+            self.totalNetCostsPerPeriod_EUR = []
+            self.time_difference_days = []
+            self.costsUsedEnergyPerPeriod_EUR = []
+            self.costDifferencePerPeriod_EUR = []
             self.annualPrepayment_EUR = None
-            self.energyDifference_list = None
             self.totalUsedEnergy_kWh = None
             self.timePeriod_days = None
             self.timePeriod_months = None
@@ -60,6 +63,7 @@ class cost_analyzer:
 
     def calculate_time_period(self, date_tuple):
         try:
+            self.time_difference_days = [(date_tuple[i+1] - date_tuple[i]).days for i in range(len(date_tuple) - 1)]
             self.timePeriod_days = (date_tuple[-1] - date_tuple[0]).days
             self.timePeriod_months = math.floor(self.timePeriod_days / UI_constants.DEF_DAYS_MONTH)
 
@@ -112,13 +116,35 @@ class cost_analyzer:
         except Exception as err:
             raise Exception(f">> Unexpected error @calculate_annual_prepayment_EUR: {err}")
 
-    def calculate_cost_difference(self):
+    def calculate_total_cost_difference(self):
         try:
             self.costDifference_EUR = round((self.annualPrepayment_EUR + self.ADD_CREDIT_EUR) -
                                             self.totalNetEnergyCosts_EUR, 2)
 
         except Exception as err:
             raise Exception(f">> Unexpected error @calculate_cost_difference: {err}")
+
+    def calculate_costs_per_period(self):
+        try:
+            for index, diffEnergy_kWh in enumerate(self.energyDifference_list):
+                timePeriod_months = round(self.time_difference_days[index] / UI_constants.DEF_DAYS_MONTH, 1)
+
+                self.costsUsedEnergyPerPeriod_EUR.append(round(diffEnergy_kWh * self.ENERGY_PRICE_EUR_kWh *
+                                                               (1 - self.VA_TAX_REL - self.TAX_X_REL), 2))
+
+                partialBasicCosts_net = round(self.ANNUAL_BASIC_PRICE_EUR/12 * (1 - self.VA_TAX_REL + self.TAX_X_REL) *
+                                              timePeriod_months, 2)
+
+                netCosts = self.costsUsedEnergyPerPeriod_EUR[index] + partialBasicCosts_net
+                costsCurrentTax_EUR = self.ABS_CURRENT_TAX_EUR_kWh * diffEnergy_kWh
+                costsCurrentTax_included = round(costsCurrentTax_EUR + netCosts, 2)
+                costsVAT_EUR = round(costsCurrentTax_included * self.VA_TAX_REL, 2)
+                self.totalNetCostsPerPeriod_EUR.append(round(costsVAT_EUR + costsCurrentTax_included, 2))
+                periodPrepayment_EUR = round(self.MONTHLY_COSTS_EUR * timePeriod_months, 2)
+                self.costDifferencePerPeriod_EUR.append(round(periodPrepayment_EUR - self.totalNetCostsPerPeriod_EUR[index], 2))
+
+        except Exception as err:
+            raise Exception(f">> Unexpected error @calculate_costs_per_period: {err}")
 
     def show_results(self):
         try:
@@ -168,11 +194,12 @@ class cost_analyzer:
             self.calculate_costs_current_tax_included()
             self.calculate_total_energy_costs()
             self.calculate_annual_prepayment_EUR()
-            self.calculate_cost_difference()
-            self.show_results()
+            self.calculate_total_cost_difference()
+            self.calculate_costs_per_period()
 
-            self.master.analysis_is_running = False
-            self.master.button_run.configure(state="normal")
+            # Return results
+            self.show_results()
+            resultsVisualizer = rv.resultsVisualizer(self.master, self)
 
         except Exception as err:
             raise Exception(f">> Unexpected error @run_calculations: {err}")

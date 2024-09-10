@@ -108,7 +108,7 @@ class configWindow:
             self.add_credit_entry.pack(side='left', padx=1, pady=1, expand=False)
             self.add_credit_entry.configure(validate="focusout",
                                             validatecommand=(self.configWindow.window.register(
-                                                    lambda value: gen_widgets.newWindow.validate_number(
+                                                    lambda value: gen_widgets.newWindow.validate_optional_number(
                                                         self.error_label, self.add_credit_entry.get())), '%P'))
 
             self.add_credit_entry.insert(0, str(self.ADD_CREDIT_EUR))
@@ -152,7 +152,7 @@ class configWindow:
         if gen_widgets.newWindow.validate_number(self.error_label, self.price_entry.get()) and \
            gen_widgets.newWindow.validate_number(self.error_label, self.basic_price_entry.get()) and \
            gen_widgets.newWindow.validate_number(self.error_label, self.monthly_costs_entry.get()) and \
-           gen_widgets.newWindow.validate_number(self.error_label, self.add_credit_entry.get()):
+           gen_widgets.newWindow.validate_optional_number(self.error_label, self.add_credit_entry.get()):
             self.error_label.configure(text="")
             isValid = True
         else:

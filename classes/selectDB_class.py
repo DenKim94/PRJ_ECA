@@ -18,6 +18,8 @@ class selectDB_frame(ctk.CTkFrame):
             self.dropDownValue = ctk.StringVar(value=UI_constants.PLACEHOLDER_TEXT)
             self.icon_path = os.path.join(UI_constants.DEF_ICON_ROOT, UI_constants.DEF_ICON_NAME)
             self.update_edit_button_state_callback = None
+            self.disable_buttons_callback = None
+            self.enable_buttons_callback = None
             self.analysis_is_running = False
 
             # UPDATE DATABASE LIST
