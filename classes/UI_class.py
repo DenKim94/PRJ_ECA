@@ -18,6 +18,15 @@ class sharedAppStates:
 
 
 class App(ctk.CTk):     # analogy: root = ctk.CTk()
+    """
+    A GUI application to manage energy costs.
+
+    The application provides a graphical user interface to easily manage energy costs.
+    It allows users to create, edit and delete databases, containing energy costs data.
+    The application displays a graphical representation of the data and allows users to
+    add new entries to the database.
+
+    """
     def __init__(self, sharedStates):
         """
         Initializes the application window with the specified UI constants.
