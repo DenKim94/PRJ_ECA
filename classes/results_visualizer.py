@@ -45,7 +45,6 @@ class resultsVisualizer:
                 ax.set_facecolor("white")
                 ax.grid(True, which='both', axis='both', color='black', linestyle='--', linewidth=0.5)
 
-            # Erstelle das Plot
             line, = ax.plot(self.x_values, self.y_values, color='lightgreen'
                             if self.appearance_mode == "Dark" else 'darkgreen',
                             marker='o', linestyle='-')
@@ -59,22 +58,18 @@ class resultsVisualizer:
             plt.xlabel('Datum', color='white' if self.appearance_mode == "Dark" else 'black')
             plt.ylabel('Verbrauchte Energie in kWh', color='white' if self.appearance_mode == "Dark" else 'black')
 
-            # Erstelle das Canvas und füge es dem tkinter Widget hinzu
             canvas = FigureCanvasTkAgg(fig, master=frame_fig)
             canvas.get_tk_widget().config(bg='black' if self.appearance_mode == "Dark" else 'white')
             canvas.get_tk_widget().pack(side='top')
 
-            # mplcursors verwenden, um bei Klick die Werte anzuzeigen
             cursor = mplcursors.cursor(line)
 
-            # Passe das Label so an, dass es nur bei Klick erscheint
             @cursor.connect("add")
             def on_click(sel):
                 idx = int(sel.index)
                 sel.annotation.set(text=f"{self.y_values[idx]} kWh")
                 sel.annotation.get_bbox_patch().set(fc="white", alpha=0.8)
 
-            # Restlicher Code (Frames für Text etc.)
             frame_left = ctk.CTkFrame(master=frame_fig, fg_color="transparent")
             frame_left.pack(side='left', padx=60, pady=20)
             frame_right = ctk.CTkFrame(master=frame_fig, fg_color="transparent")
@@ -144,7 +139,7 @@ class resultsVisualizer:
             if self.master.enable_buttons_callback is not None:
                 self.master.enable_buttons_callback()
 
-            # Enable run button
+            # Enable run button and close all figures
             self.master.analysis_is_running = False
             self.master.button_run.configure(state="normal")
             plt.close('all')
