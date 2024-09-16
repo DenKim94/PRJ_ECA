@@ -63,8 +63,8 @@ MIN_WINDOW_SIZE = [420, 250]  # [width, height] in pixel
 MAX_WINDOW_SIZE = [420, 250]  # [width, height] in pixel
 
 # RESULTS VISUALIZER
-MIN_WINDOW_SIZE_RESULTS = [550, 350]  # [min_width, min_height] in pixel
-MAX_WINDOW_SIZE_RESULTS = [850, 500]  # [max_width, max_height] in pixel
+MIN_WINDOW_SIZE_RESULTS = [600, 450]  # [min_width, min_height] in pixel
+MAX_WINDOW_SIZE_RESULTS = [950, 600]  # [max_width, max_height] in pixel
 
 
 

@@ -21,6 +21,8 @@ class cost_analyzer:
             self.max_size_cost_analyzer = UI_constants.MAX_WINDOW_SIZE
 
             # CALCULATED PARAMETERS
+            self.date_tuple = None
+            self.energy_tuple = None
             self.energyDifference_list = []
             self.totalNetCostsPerPeriod_EUR = []
             self.time_difference_days = []
@@ -38,9 +40,6 @@ class cost_analyzer:
             self.totalNetEnergyCosts_EUR = None
             self.costDifference_EUR = None
 
-            # self.analysis_window = gen_widgets.newWindow(self.master.master, self.min_size_cost_analyzer,
-            #                                              self.max_size_cost_analyzer)
-
         except Exception as err:
             raise Exception(f">> Unexpected error @cost_analyzer: {err}")
 
@@ -55,7 +54,7 @@ class cost_analyzer:
 
     def calculate_total_used_energy(self, meas_energy_kWh):
         try:
-            self.energyDifference_list = [meas_energy_kWh[i+1] - meas_energy_kWh[i] for i in range(len(meas_energy_kWh) - 1)]
+            self.energyDifference_list = [round(meas_energy_kWh[i+1] - meas_energy_kWh[i],2) for i in range(len(meas_energy_kWh) - 1)]
             self.totalUsedEnergy_kWh = sum(self.energyDifference_list)
 
         except Exception as err:
@@ -185,21 +184,25 @@ class cost_analyzer:
 
     def run_calculations(self):
         try:
-            [date_tuple, energy_tuple] = self.get_stored_data()
-            self.calculate_total_used_energy(energy_tuple)
-            self.calculate_time_period(date_tuple)
-            self.calculate_net_costs_used_energy()
-            self.calculate_partial_basic_net_costs()
-            self.calculate_total_net_costs()
-            self.calculate_costs_current_tax_included()
-            self.calculate_total_energy_costs()
-            self.calculate_annual_prepayment_EUR()
-            self.calculate_total_cost_difference()
-            self.calculate_costs_per_period()
+            [self.date_tuple, self.energy_tuple] = self.get_stored_data()
+            if len(self.date_tuple) > 1:
+                self.calculate_total_used_energy(self.energy_tuple)
+                self.calculate_time_period(self.date_tuple)
+                self.calculate_net_costs_used_energy()
+                self.calculate_partial_basic_net_costs()
+                self.calculate_total_net_costs()
+                self.calculate_costs_current_tax_included()
+                self.calculate_total_energy_costs()
+                self.calculate_annual_prepayment_EUR()
+                self.calculate_total_cost_difference()
+                self.calculate_costs_per_period()
 
-            # Return results
-            self.show_results()
-            resultsVisualizer = rv.resultsVisualizer(self.master, self)
+                # Return results
+                self.show_results()
+                rv.resultsVisualizer(self.master, self)
+
+            else:
+                print(">> Nicht genug Datenpunkte vorhanden.")
 
         except Exception as err:
             raise Exception(f">> Unexpected error @run_calculations: {err}")

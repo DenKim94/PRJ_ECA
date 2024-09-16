@@ -26,7 +26,6 @@ class buttons_frame(ctk.CTkFrame):
             self.max_size_edit_window = UI_constants.MAX_WINDOW_SIZE
 
             # WIDGETS
-            self.error_label = None
             self.confirm_button = None
             self.db_name_entry = None
             self.number_entry = None
