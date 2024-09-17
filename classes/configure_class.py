@@ -138,12 +138,15 @@ class configWindow:
                 self.MONTHLY_COSTS_EUR = float(self.monthly_costs_entry.get())
                 self.ADD_CREDIT_EUR = float(self.add_credit_entry.get())
 
-                self.error_label.configure(text="Werte sind übernommen.", text_color="green")
                 # PROVIDE CONFIGS TO DATABASE CLASS
                 self.dataBase.ENERGY_PRICE_EUR_kWh = self.ENERGY_PRICE_EUR_kWh
                 self.dataBase.ANNUAL_BASIC_PRICE_EUR = self.ANNUAL_BASIC_PRICE_EUR
                 self.dataBase.MONTHLY_COSTS_EUR = self.MONTHLY_COSTS_EUR
                 self.dataBase.ADD_CREDIT_EUR = self.ADD_CREDIT_EUR
+
+                # CLOSE WINDOW and ENABLE BUTTONS
+                self.master.enable_buttons()
+                self.configWindow.window.destroy()
 
         except Exception as err:
             raise Exception(f">> Unexpected error @provide_configs: {err}")
@@ -153,6 +156,7 @@ class configWindow:
            gen_widgets.newWindow.validate_number(self.error_label, self.basic_price_entry.get()) and \
            gen_widgets.newWindow.validate_number(self.error_label, self.monthly_costs_entry.get()) and \
            gen_widgets.newWindow.validate_optional_number(self.error_label, self.add_credit_entry.get()):
+
             self.error_label.configure(text="")
             isValid = True
         else:

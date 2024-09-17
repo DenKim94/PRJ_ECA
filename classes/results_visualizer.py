@@ -22,7 +22,7 @@ class resultsVisualizer:
             self.resultsWindow = gen_widgets.newWindow(self.master.master, UI_constants.MIN_WINDOW_SIZE_RESULTS,
                                                         UI_constants.MAX_WINDOW_SIZE_RESULTS)
 
-            self.resultsWindow.window.title("Ergebnisse der Datenanalyse")
+            self.resultsWindow.window.title("Ergebnisse der Kostenberechnung")
             if self.master.disable_buttons_callback is not None:
                 self.master.disable_buttons_callback()
 

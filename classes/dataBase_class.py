@@ -159,11 +159,10 @@ class dataBase:
     def get_last_elem_id(self):
         try:
             self.cursor.execute(f"""
-                SELECT elem_id FROM {self.table_name}
-                ORDER BY date DESC
-                LIMIT 1
+                SELECT MAX(elem_id) FROM {self.table_name}
             """)
             result = self.cursor.fetchone()  # [elem_id]
+
             return result[0] if result else None
 
         except sqlite3.OperationalError as err:
@@ -181,7 +180,7 @@ class dataBase:
               """, (last_elem_id,))
             self.connector.commit()
 
-            print(f">> Removed last entry from database: {db_name}")
+            print(f">> Removed last entry from database: {db_name} with the id: {last_elem_id}")
 
             return last_elem_id
 

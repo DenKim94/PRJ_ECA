@@ -188,7 +188,6 @@ class editDatabaseWindow:
     def delete_last_entry_from_db(self):
         try:
             last_elem_id = self.master.dataBase.delete_last_entry_from_db(self.master.sharedStates.selectedDataBase)
-            print(last_elem_id)
             if last_elem_id is not None:
                 self.error_label.configure(text="Letzter Eintrag wurde gelöscht.", text_color="green")
             else:
