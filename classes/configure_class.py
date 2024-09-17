@@ -1,5 +1,6 @@
 import customtkinter as ctk
 import UI_constants
+import Configs as cfg
 import classes.generic_widget_class as gen_widgets
 
 
@@ -16,11 +17,11 @@ class configWindow:
         self.max_size_config_window = UI_constants.MAX_WINDOW_SIZE
 
         # DEFAULT SETTINGS
-        self.ENERGY_PRICE_EUR_kWh = UI_constants.DEF_ENERGY_PRICE_EUR_kWh
-        self.ANNUAL_BASIC_PRICE_EUR = UI_constants.DEF_ANNUAL_BASIC_PRICE_EUR
-        self.MONTHLY_COSTS_EUR = UI_constants.DEF_MONTHLY_COSTS_EUR
-        self.ADD_CREDIT_EUR = UI_constants.DEF_ADD_CREDIT_EUR
-        self.ABS_ELEC_TAX_EUR_kWh = UI_constants.DEF_ABS_ELECTRICITY_TAX_EUR
+        self.ENERGY_PRICE_EUR_kWh = cfg.DEF_ENERGY_PRICE_EUR_kWh
+        self.ANNUAL_BASIC_PRICE_EUR = cfg.DEF_ANNUAL_BASIC_PRICE_EUR
+        self.MONTHLY_COSTS_EUR = cfg.DEF_MONTHLY_COSTS_EUR
+        self.ADD_CREDIT_EUR = cfg.DEF_ADD_CREDIT_EUR
+        self.ABS_ELEC_TAX_EUR_kWh = cfg.DEF_ABS_ELECTRICITY_TAX_EUR
 
         try:
             self.master = parent

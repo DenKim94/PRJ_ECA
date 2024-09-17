@@ -167,7 +167,7 @@ class editDatabaseWindow:
                                                     width=self.BUTTON_WIDTH,
                                                     command=self.delete_last_entry_from_db)
 
-            self.remove_elem_button.pack(side='top', padx=5, pady=5)
+            self.remove_elem_button.pack(side='top', padx=5, pady=0)
             self.delete_db_button = ctk.CTkButton(master=self.delete_db.container, text="Datenbank löschen",
                                                   state="normal",
                                                   cursor=self.CURSOR_TYPE,
@@ -177,7 +177,7 @@ class editDatabaseWindow:
                                                   hover_color="#8B0A0A",
                                                   command=self.delete_selected_db)
 
-            self.delete_db_button.pack(side='top', padx=5, pady=5)
+            self.delete_db_button.pack(side='top', padx=5, pady=15)
             self.delete_db.window.protocol("WM_DELETE_WINDOW", self.master.enable_buttons)
 
             self.error_label.pack(side='top', padx=5, pady=0)
@@ -187,11 +187,11 @@ class editDatabaseWindow:
 
     def delete_last_entry_from_db(self):
         try:
-            last_elem_id = self.master.dataBase.delete_last_entry_from_db(self.master.sharedStates.selectedDataBase)
-            if last_elem_id is not None:
+            db_length = self.master.dataBase.delete_last_entry_from_db(self.master.sharedStates.selectedDataBase)
+            if db_length > 1:
                 self.error_label.configure(text="Letzter Eintrag wurde gelöscht.", text_color="green")
             else:
-                self.error_label.configure(text="Kein Eintrag wurde gefunden.", text_color="red")
+                self.error_label.configure(text="Einziger Eintrag kann nicht entfernt werden.", text_color="red")
 
         except Exception as err:
 

@@ -1,5 +1,6 @@
 import classes.generic_widget_class as gen_widgets
 import UI_constants
+import Configs as cfg
 import math
 import customtkinter as ctk
 import matplotlib.pyplot as plt
@@ -80,8 +81,8 @@ class resultsVisualizer:
                             f" Verbrauchspreis (netto): {self.calculation.costsUsedEnergy_net} EUR",
                             f" Grundpreis (netto): {self.calculation.partialBasicCosts_net} EUR",
                             f" Kosten Umsatzsteuer: {self.calculation.costsVAT_EUR} EUR",
-                            f" Stromsteuersatz: {UI_constants.DEF_ABS_ELECTRICITY_TAX_EUR} EUR",
-                            f" Kosten Stromsteuer: {round(self.calculation.totalUsedEnergy_kWh*UI_constants.DEF_ABS_ELECTRICITY_TAX_EUR,2)} EUR",
+                            f" Stromsteuersatz: {cfg.DEF_ABS_ELECTRICITY_TAX_EUR} EUR",
+                            f" Kosten Stromsteuer: {round(self.calculation.totalUsedEnergy_kWh*cfg.DEF_ABS_ELECTRICITY_TAX_EUR,2)} EUR",
                             f" Gesamte Stromkosten (netto): {self.calculation.totalNetEnergyCosts_EUR} EUR",
                             f" Einzahlungszeitraum: {self.calculation.timePeriod_months} Monate",
                             f" Vorauszahlung (gesamt): {self.calculation.annualPrepayment_EUR} EUR",

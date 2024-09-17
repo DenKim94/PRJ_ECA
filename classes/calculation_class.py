@@ -1,4 +1,5 @@
 import UI_constants
+import Configs as cfg
 from datetime import datetime
 import math
 import classes.results_visualizer as rv
@@ -15,8 +16,8 @@ class cost_analyzer:
             self.MONTHLY_COSTS_EUR = self.dataBase.MONTHLY_COSTS_EUR
             self.ABS_CURRENT_TAX_EUR_kWh = self.dataBase.ABS_CURRENT_TAX_EUR_kWh
             self.ADD_CREDIT_EUR = self.dataBase.ADD_CREDIT_EUR
-            self.VA_TAX_REL = UI_constants.DEF_VA_TAX_PERCENTAGE / 100
-            self.TAX_X_REL = UI_constants.DEF_TAX_X_PERCENTAGE / 100
+            self.VA_TAX_REL = cfg.DEF_VA_TAX_PERCENTAGE / 100
+            self.TAX_X_REL = cfg.DEF_TAX_X_PERCENTAGE / 100
             self.min_size_cost_analyzer = UI_constants.MIN_WINDOW_SIZE
             self.max_size_cost_analyzer = UI_constants.MAX_WINDOW_SIZE
 
@@ -64,7 +65,7 @@ class cost_analyzer:
         try:
             self.time_difference_days = [(date_tuple[i+1] - date_tuple[i]).days for i in range(len(date_tuple) - 1)]
             self.timePeriod_days = (date_tuple[-1] - date_tuple[0]).days
-            self.timePeriod_months = math.floor(self.timePeriod_days / UI_constants.DEF_DAYS_MONTH)
+            self.timePeriod_months = math.floor(self.timePeriod_days / cfg.DEF_DAYS_MONTH)
 
         except Exception as err:
             raise Exception(f">> Unexpected error @calculate_time_period_days: {err}")
@@ -80,7 +81,7 @@ class cost_analyzer:
     def calculate_partial_basic_net_costs(self):
         try:
             self.partialBasicCosts_net = round(self.ANNUAL_BASIC_PRICE_EUR * (1-self.VA_TAX_REL+self.TAX_X_REL) *
-                                               self.timePeriod_days/UI_constants.DEF_DAYS_YEAR, 2)
+                                               self.timePeriod_days/cfg.DEF_DAYS_YEAR, 2)
 
         except Exception as err:
             raise Exception(f">> Unexpected error @calculate_partial_basic_costs: {err}")
@@ -126,7 +127,7 @@ class cost_analyzer:
     def calculate_costs_per_period(self):
         try:
             for index, diffEnergy_kWh in enumerate(self.energyDifference_list):
-                timePeriod_months = round(self.time_difference_days[index] / UI_constants.DEF_DAYS_MONTH, 1)
+                timePeriod_months = round(self.time_difference_days[index] / cfg.DEF_DAYS_MONTH, 1)
 
                 self.costsUsedEnergyPerPeriod_EUR.append(round(diffEnergy_kWh * self.ENERGY_PRICE_EUR_kWh *
                                                                (1 - self.VA_TAX_REL - self.TAX_X_REL), 2))
@@ -149,9 +150,9 @@ class cost_analyzer:
         try:
             configs_output = f"""
             ############################ KONFIGURATION #############################
-            * Umsatzsteuer: {UI_constants.DEF_VA_TAX_PERCENTAGE} %
-            * Stromsteuer: {UI_constants.DEF_ABS_ELECTRICITY_TAX_EUR} €/kWh
-            * Zusätzlicher Steuersatz (z.B. Umlagen, Konzession): {UI_constants.DEF_TAX_X_PERCENTAGE} %
+            * Umsatzsteuer: {cfg.DEF_VA_TAX_PERCENTAGE} %
+            * Stromsteuer: {cfg.DEF_ABS_ELECTRICITY_TAX_EUR} €/kWh
+            * Zusätzlicher Steuersatz (z.B. Umlagen, Konzession): {cfg.DEF_TAX_X_PERCENTAGE} %
             * Verbrauchspreis: {self.ENERGY_PRICE_EUR_kWh} €/kWh
             * Grundpreis: {self.ANNUAL_BASIC_PRICE_EUR} €/Jahr
             * Abschlag: {self.MONTHLY_COSTS_EUR} €/Monat

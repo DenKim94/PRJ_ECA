@@ -1,5 +1,6 @@
 import sqlite3
 import UI_constants
+import Configs as cfg
 import os
 import datetime
 
@@ -18,12 +19,12 @@ class dataBase:
         self.existing_db_files = self.get_existing_db_files()
         self.remove_dropDownValue_callback = None
 
-        self.ENERGY_PRICE_EUR_kWh = UI_constants.DEF_ENERGY_PRICE_EUR_kWh
-        self.ANNUAL_BASIC_PRICE_EUR = UI_constants.DEF_ANNUAL_BASIC_PRICE_EUR
-        self.MONTHLY_COSTS_EUR = UI_constants.DEF_MONTHLY_COSTS_EUR
-        self.ADD_CREDIT_EUR = UI_constants.DEF_ADD_CREDIT_EUR
-        self.ABS_CURRENT_TAX_EUR_kWh = UI_constants.DEF_ABS_ELECTRICITY_TAX_EUR
-        self.VA_TAX_REL = UI_constants.DEF_VA_TAX_PERCENTAGE / 100
+        self.ENERGY_PRICE_EUR_kWh = cfg.DEF_ENERGY_PRICE_EUR_kWh
+        self.ANNUAL_BASIC_PRICE_EUR = cfg.DEF_ANNUAL_BASIC_PRICE_EUR
+        self.MONTHLY_COSTS_EUR = cfg.DEF_MONTHLY_COSTS_EUR
+        self.ADD_CREDIT_EUR = cfg.DEF_ADD_CREDIT_EUR
+        self.ABS_CURRENT_TAX_EUR_kWh = cfg.DEF_ABS_ELECTRICITY_TAX_EUR
+        self.VA_TAX_REL = cfg.DEF_VA_TAX_PERCENTAGE / 100
         self.min_size_cost_analyzer = UI_constants.MIN_WINDOW_SIZE
         self.max_size_cost_analyzer = UI_constants.MAX_WINDOW_SIZE
 
@@ -131,9 +132,9 @@ class dataBase:
                     VALUES (?, ?)
                 """, (new_date, new_energy_value))
                 self.connector.commit()
-                print(f">> Neuer Eintrag hinzugefügt in: {db_name}")
+                print(f">> Neuer Eintrag in {db_name} hinzugefügt.")
             else:
-                print(f"Invalid input data @add_data_to_existing_db(): {new_date}, {new_energy_value}")
+                print(f"Ungültige Werte @add_data_to_existing_db(): {new_date}, {new_energy_value}")
 
             return self.data_isValid
 
@@ -161,7 +162,7 @@ class dataBase:
             self.cursor.execute(f"""
                 SELECT MAX(elem_id) FROM {self.table_name}
             """)
-            result = self.cursor.fetchone()  # [elem_id]
+            result = self.cursor.fetchone()
 
             return result[0] if result else None
 
@@ -170,22 +171,38 @@ class dataBase:
 
     def delete_last_entry_from_db(self, db_name):
         try:
+            db_length = self.get_length_of_database(db_name)
             # Open the existing database
             self.open_database(db_name)
-            last_elem_id = self.get_last_elem_id()
+            if db_length > 1:
+                last_elem_id = self.get_last_elem_id()
+                # Delete the last entry
+                self.cursor.execute(f"""
+                      DELETE FROM {self.table_name} WHERE elem_id = ?
+                  """, (last_elem_id,))
 
-            # Delete the last entry
-            self.cursor.execute(f"""
-                  DELETE FROM {self.table_name} WHERE elem_id = ?
-              """, (last_elem_id,))
-            self.connector.commit()
+                self.connector.commit()
+                print(f">> Eintrag mit der id: {last_elem_id} in {db_name} wurde entfernt.")
 
-            print(f">> Removed last entry from database: {db_name} with the id: {last_elem_id}")
-
-            return last_elem_id
+            return db_length
 
         except sqlite3.OperationalError as err:
             raise Exception(f"Unexpected error @remove_last_entry_from_db(): {err}")
+        finally:
+            self.connector.close()
+
+    def get_length_of_database(self, db_name):
+        try:
+            self.open_database(db_name)
+            self.cursor.execute(f"""
+                SELECT COUNT(*) FROM {self.table_name}
+            """)
+            db_length = self.cursor.fetchone()
+
+            return db_length[0]
+
+        except sqlite3.OperationalError as err:
+            raise Exception(f"Unexpected error @check_length_of_database(): {err}")
         finally:
             self.connector.close()
 
@@ -223,8 +240,8 @@ class dataBase:
         try:
             if self._check_for_existing_db():
                 os.remove(os.path.join(self.subfolder_path, db_name))
-                print(f">> Gelöschte Datenbank: {db_name}")
                 self.existing_db_files = self.get_existing_db_files()
+                print(f">> Gelöschte Datenbank: {db_name}")
 
                 if self.remove_dropDownValue_callback is not None:
                     self.remove_dropDownValue_callback(db_name)
