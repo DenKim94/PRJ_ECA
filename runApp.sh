@@ -11,4 +11,4 @@ fi
 
 # Start der Anwendung
 source .venv/bin/activate
-.venv/bin/python3 App.py >> "$(date): $LOGFILE" 2>&1
+.venv/bin/python3 ./App.py >> "$LOGFILE" 2>&1
